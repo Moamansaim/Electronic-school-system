@@ -7,10 +7,13 @@ use App\Http\Requests\TeacherRequest;
 use App\Models\GradeLevel;
 use App\Models\Teacher;
 use App\Models\TeacherAssignment;
+use App\Models\User;
 use Exception;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class TeacherController extends Controller
 {
@@ -90,6 +93,7 @@ class TeacherController extends Controller
     public function storeAssignment(TeacherAssignmentRequest $teacherAssignmentRequest)
     {
         try {
+
             $teacher_assignment = $teacherAssignmentRequest->validated();
 
             TeacherAssignment::create($teacher_assignment);
@@ -98,7 +102,6 @@ class TeacherController extends Controller
                 ->route('teachers.index')
                 ->with('success', 'تمت  تعيين المادة والصف  الدراسي للمعلم بنجاح.');
         } catch (Exception $e) {
-            DB::rollBack();
 
             return back()
                 ->withInput()
@@ -130,13 +133,24 @@ class TeacherController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(TeacherRequest $teacherRequest)
+    public function store(TeacherRequest $teacherRequest): RedirectResponse
     {
 
         try {
+
             DB::beginTransaction();
 
-            $data = $teacherRequest->validated();
+            $generated_school_id = strtolower(Str::random(4).''.$teacherRequest->national_id);
+            $generated_password = Str::random(12);
+
+            $user = User::create([
+                'school_id' => $generated_school_id,
+                'password' => Hash::make($generated_password),
+            ]);
+
+            $teacherRequest->merge(['user_id' => $user->id]);
+
+            $data = $teacherRequest->all();
 
             $teacher = Teacher::create($data);
 
@@ -151,12 +165,18 @@ class TeacherController extends Controller
             DB::commit();
 
             return redirect()->route('teachers.index')
-                ->with('success', 'تم إضافة المعلم   بنجاح');
+                ->with([
+                    'success' => 'تم إضافة المعلم   بنجاح',
+                    'generated_school_id' => $generated_school_id,
+                    'generated_password' => $generated_password,
+
+                ]);
         } catch (Exception $e) {
             DB::rollBack();
 
             return back()->withInput()
-                ->with('error', 'حدث خطأ أثناء حفظ البيانات، يرجى المحاولة لاحقًا.');
+                ->with('error', "{$e->getMessage()}");
+            // ->with('error', 'حدث خطأ أثناء حفظ البيانات، يرجى المحاولة لاحقًا. ');
         }
     }
 

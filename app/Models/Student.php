@@ -4,7 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 
 class Student extends Model
 {
@@ -19,7 +22,9 @@ class Student extends Model
         'district',
         'street',
         'grade_level_id',
-        'classroom_id'
+        'classroom_id',
+        'user_id',
+        'school_id',
     ];
 
     public function scopeSearch(Builder $builder, $trem)
@@ -37,13 +42,27 @@ class Student extends Model
         });
     }
 
-    public function phoneNumbers()
+    public function phoneNumbers(): HasMany
     {
         return $this->HasMany(StudentPhoneNumber::class);
     }
 
+    public function classroom(): BelongsTo
+    {
+        return $this->belongsTo(Classroom::class);
+    }
 
-    public function subjects()
+    public function gradeLevel(): BelongsTo
+    {
+        return $this->belongsTo(GradeLevel::class);
+    }
+
+    public function image(): MorphOne
+    {
+        return $this->morphOne(Image::class, 'imageable');
+    }
+
+    public function subjects(): BelongsToMany
     {
         return $this->belongsToMany(
             Subject::class,
@@ -53,5 +72,10 @@ class Student extends Model
             'id',
             'id'
         );
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 }

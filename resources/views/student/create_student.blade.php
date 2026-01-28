@@ -117,6 +117,7 @@
                             @enderror
                         </div>
                     </div>
+                    <hr>
 
                     <div class="row">
                         <div class="col-md-4 mb-4">
@@ -170,6 +171,7 @@
                             @enderror
                         </div>
                     </div>
+                    <hr>
 
                     <div class="row">
                         <div class="col-md-6 mb-4">
@@ -204,7 +206,7 @@
                                 </div>
                                 <select name="grade_level_id" id="grade_level"
                                     class="form-control border-left-0 @error('grade_level_id') is-invalid @enderror">
-                                    <option value=""  >اختر المرحلة...</option>
+                                    <option value="">اختر المرحلة...</option>
                                     @foreach ($grade_levels as $grade_level)
                                         <option value="{{ $grade_level->id }}"
                                             {{ old('grade_level_id') == $grade_level->id ? 'selected' : '' }}>
@@ -213,9 +215,6 @@
                                     @endforeach
                                 </select>
                             </div>
-                            @error('grade_level_id')
-                                <small class="text-danger mt-1 d-block">{{ $message }}</small>
-                            @enderror
                         </div>
 
                     </div>
@@ -225,16 +224,40 @@
                             <select name="classroom_id" id="classroom"
                                 class="form-control select-search @error('classroom_id') is-invalid @enderror" required>
                                 <option value="">اختر المرحلة أولاً...</option>
+                                @if (old('grade_level_id'))
+                                    @php
+                                        $selectedGrade = $grade_levels->find(old('grade_level_id'));
+                                    @endphp
+                                    @if ($selectedGrade)
+                                        @foreach ($selectedGrade->classrooms as $classroom)
+                                            <option value="{{ $classroom->id }}"
+                                                {{ old('classroom_id') == $classroom->id ? 'selected' : '' }}>
+                                                {{ $classroom->name }}
+                                            </option>
+                                        @endforeach
+                                    @endif
+                                @endif
                             </select>
                         </div>
+
                         <div class="col-md-6 mb-4">
                             <label class="form-label font-weight-bold">المواد المسندة</label>
-                            {{-- تم إضافة [] و multiple ليدعم اختيار أكثر من مادة --}}
                             <select name="subject_ids[]" id="subject"
-                                class="form-control select-search @error('subject_ids') is-invalid @enderror"
-                                data-placeholder="اختر مادة  " multiple selected>
-                                <option value="">اختر المرحلة أولاً...</option>
-
+                                class="form-control select-search @error('subject_ids') is-invalid @enderror" multiple>
+                                @if (old('grade_level_id'))
+                                    @php
+                                        $selectedGrade = $grade_levels->find(old('grade_level_id'));
+                                        $oldSubjects = old('subject_ids', []);
+                                    @endphp
+                                    @if ($selectedGrade)
+                                        @foreach ($selectedGrade->subjects as $subject)
+                                            <option value="{{ $subject->id }}"
+                                                {{ in_array($subject->id, $oldSubjects) ? 'selected' : '' }}>
+                                                {{ $subject->name }}
+                                            </option>
+                                        @endforeach
+                                    @endif
+                                @endif
                             </select>
                         </div>
                     </div>
@@ -253,66 +276,79 @@
     </div>
 @endsection
 
-
 @push('script')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-
             const container = document.getElementById('phone-container');
 
-            // عند الضغط على زر الإضافة
-
-            container.addEventListener('click', function(e) {
-
-                if (e.target.closest('.add-phone')) {
-
+            // --- 1. معالجة أرقام الجوال القديمة (Old Phone Numbers) ---
+            @if (old('phone_numbers'))
+                // نمسح المحتوى الافتراضي أولاً إذا وجد بيانات قديمة
+                container.innerHTML = '';
+                @foreach (old('phone_numbers') as $index => $phone)
                     const newItem = document.createElement('div');
-
                     newItem.className = 'input-group mb-2 phone-item';
-
                     newItem.innerHTML = `
-
-    <div class="input-group-prepend">
-
-        <span class="input-group-text bg-light border-right-0">
-
-            <i class="fas fa-phone text-muted"></i>
-
-        </span>
-
-    </div>
-
-    <input type="text" name="phone_numbers[]" class="form-control border-left-0" placeholder="أدخل رقم جوال إضافي">
-
-    <div class="input-group-append">
-
-        <button type="button" class="btn btn-danger remove-phone">
-
-            <i class="fas fa-trash-alt"></i>
-
-        </button>
-
-    </div>
-
-    `;
-
+                        <div class="input-group-prepend">
+                            <span class="input-group-text bg-light border-right-0">
+                                <i class="fas fa-{{ $index == 0 ? 'mobile-alt' : 'phone' }} text-muted"></i>
+                            </span>
+                        </div>
+                        <input type="text" name="phone_numbers[]" value="{{ $phone }}" 
+                               class="form-control border-left-0" placeholder="أدخل رقم الجوال">
+                        <div class="input-group-append">
+                            @if ($index == 0)
+                                <button type="button" class="btn btn-success add-phone"><i class="fas fa-plus"></i></button>
+                            @else
+                                <button type="button" class="btn btn-danger remove-phone"><i class="fas fa-trash-alt"></i></button>
+                            @endif
+                        </div>`;
                     container.appendChild(newItem);
+                @endforeach
+            @endif
 
+            // عند الضغط على زر الإضافة
+            container.addEventListener('click', function(e) {
+                if (e.target.closest('.add-phone')) {
+                    const newItem = document.createElement('div');
+                    newItem.className = 'input-group mb-2 phone-item';
+                    newItem.innerHTML = `
+                        <div class="input-group-prepend">
+                            <span class="input-group-text bg-light border-right-0">
+                                <i class="fas fa-phone text-muted"></i>
+                            </span>
+                        </div>
+                        <input type="text" name="phone_numbers[]" class="form-control border-left-0" placeholder="أدخل رقم جوال إضافي">
+                        <div class="input-group-append">
+                            <button type="button" class="btn btn-danger remove-phone">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </div>`;
+                    container.appendChild(newItem);
                 }
 
                 // عند الضغط على زر الحذف
-
                 if (e.target.closest('.remove-phone')) {
-
                     e.target.closest('.phone-item').remove();
-
                 }
-
             });
-
         });
 
         $(document).ready(function() {
+            // دالة لتنسيق حقل المواد إذا كان يحتوي على بيانات (لقفله)
+            function checkSubjectLock() {
+                var subjectSelect = $('#subject');
+                if (subjectSelect.val() && subjectSelect.val().length > 0) {
+                    subjectSelect.css({
+                        "pointer-events": "none",
+                        "background-color": "#e9ecef"
+                    }).attr("tabindex", "-1");
+                }
+            }
+
+            // تنفيذ التحقق عند تحميل الصفحة لأول مرة (لحالة الـ Validation Error)
+            checkSubjectLock();
+
             $('#grade_level').on('change', function() {
                 var gradeId = $(this).val();
                 var classroomSelect = $('#classroom');
@@ -322,9 +358,7 @@
                     classroomSelect.html('<option value="">جاري التحميل...</option>');
                     subjectSelect.html('<option value="">جاري التحميل...</option>');
 
-                    // 1. نجهز الرابط باستخدام الـ Route Name ونضع علامة مؤقتة :id
                     var url = "{{ route('students.get-data-by-grade', ':id') }}";
-                    // 2. نستبدل العلامة المؤقتة بمتغير الـ JS الحقيقي
                     url = url.replace(':id', gradeId);
 
                     $.ajax({
@@ -338,31 +372,30 @@
                                 classroomSelect.append('<option value="' + value.id +
                                     '">' + value.name + '</option>');
                             });
-                            subjectSelect.empty().append(
-                                '<option value="">اختر المادة...</option>');
+
+                            subjectSelect.empty();
                             $.each(data.subjects, function(key, value) {
                                 subjectSelect.append('<option selected value="' + value
-                                    .id +
-                                    '">' + value.name + '</option>');
+                                    .id + '">' + value.name + '</option>');
                             });
+
                             subjectSelect.css({
                                 "pointer-events": "none",
                                 "background-color": "#e9ecef"
-                            })
-                            subjectSelect.attr({
-                                "tabindex": "-1",
-                                
-                            })
-
+                            }).attr("tabindex", "-1");
                         },
                         error: function(xhr) {
-                            console.error(xhr.responseText); // لتتبع الخطأ في الـ Console
-                            alert('حدث خطأ أثناء جلب البيانات، يرجى المحاولة لاحقاً.');
+                            console.error(xhr.responseText);
+                            alert('حدث خطأ أثناء جلب البيانات.');
                         }
                     });
                 } else {
                     classroomSelect.empty().append('<option value="">اختر المرحلة أولاً...</option>');
                     subjectSelect.empty().append('<option value="">اختر المرحلة أولاً...</option>');
+                    subjectSelect.css({
+                        "pointer-events": "auto",
+                        "background-color": "#fff"
+                    }).removeAttr("tabindex");
                 }
             });
         });

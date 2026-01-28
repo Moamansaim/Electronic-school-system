@@ -25,7 +25,7 @@ class ConfirmablePasswordController extends Controller
     public function store(Request $request): RedirectResponse
     {
         if (! Auth::guard('web')->validate([
-            'email' => $request->user()->email,
+            'school_id' => $request->user()->school_id, // جلب الرقم المدرسي للمستخدم الحالي
             'password' => $request->password,
         ])) {
             throw ValidationException::withMessages([
@@ -35,6 +35,6 @@ class ConfirmablePasswordController extends Controller
 
         $request->session()->put('auth.password_confirmed_at', time());
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        return redirect()->intended(default: route('dashboard', absolute: false));
     }
 }

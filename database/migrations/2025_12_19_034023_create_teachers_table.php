@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('teachers', function (Blueprint $table) {
             $table->id();
-            $table->string('first_name', 30);
+            $table->string('first_name', length: 30);
             $table->string('father_name', 30);
             $table->string('grandfather_name', 30);
             $table->string('family_name', 30);
@@ -22,6 +22,10 @@ return new class extends Migration
             $table->string('city')->nullable();
             $table->string('district')->nullable();
             $table->string('street')->nullable();
+            $table->foreignId('user_id')
+                ->nullable()
+                ->constrained('users', 'id')
+                ->nullOnDelete();
             $table->softDeletes();
             $table->timestamps();
         });

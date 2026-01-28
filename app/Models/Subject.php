@@ -59,7 +59,6 @@ class Subject extends Model
             ->translatedFormat('l، j F Y g:i a');
     }
 
-
     public function students()
     {
         return $this->belongsToMany(

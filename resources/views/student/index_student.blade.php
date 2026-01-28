@@ -5,6 +5,43 @@
     <div class="container-fluid p-4">
         <x-grade-level-success-component />
 
+        @if (session('generated_school_id'))
+            <div class="alert alert-success"
+                style="background: #e6fffa; border: 1px solid #38b2ac; padding: 20px; border-radius: 8px;">
+                <h4 style="color: #2c7a7b; font-weight: bold;">✅ تم إنشاء الحساب!</h4>
+                <p style="color: #2c7a7b; font-weight: bold;">بيانات الدخول جاهزة للنسخ:</p>
+
+                <div id="fullAccountInfo" class="p-3 bg-white border rounded mt-2">
+                    <strong>الرقم المدرسي الخاص بالطالب:</strong> {{ session('generated_school_id') }} <br>
+                    <strong>كلمة المرور:</strong> {{ session('generated_password') }}
+                </div>
+
+                <button onclick="copyAllInfo()" class="btn btn-primary mt-3"
+                    style="background: #3182ce; color: white; padding: 8px 15px; border-radius: 5px; border: none; cursor: pointer;">
+                    نسخ البيانات كاملة
+                </button>
+                 <button onclick="print()" class="btn btn-primary mt-3"
+                    style="background: #3182ce; color: white; padding: 8px 15px; border-radius: 5px; border: none; cursor: pointer;">
+                    طباعة
+                </button>
+            </div>
+
+            <script>
+                function copyAllInfo() {
+                    const school_id = "{{ session('generated_school_id') }}";
+                    const pass = "{{ session('generated_password') }}";
+                    const textToCopy = "SchoolID: " + school_id + "\nPassword: " + pass;
+
+                    navigator.clipboard.writeText(textToCopy).then(function() {
+                        alert('تم نسخ الإيميل وكلمة المرور معاً بنجاح!');
+                    }).catch(err => {
+                        console.error('فشل النسخ: ', err);
+                    });
+                }
+            </script>
+        @endif
+
+
         <div class="card border-0 shadow-sm" style="border-radius: 15px;">
             <div class="card-header bg-white border-0 py-4">
                 <div class="row align-items-center">
@@ -37,7 +74,7 @@
 
             <div class="card-body p-0">
                 <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0">
+                    <table class="table table-hover align-middle mb-0 min-w-full ">
                         <thead class="bg-light">
                             <tr>
                                 <th class="border-0 text-center text-muted py-3" style="width: 50px;">#</th>
@@ -45,6 +82,7 @@
                                 <th class="border-0 text-muted py-3">رقم الهوية</th>
                                 <th class="border-0 text-muted py-3">العنوان</th>
                                 <th class="border-0 text-muted py-3">أرقام تواصل ولي الأمر</th>
+
                                 <th class="border-0 text-center text-muted py-3">العمليات</th>
                             </tr>
                         </thead>
@@ -60,7 +98,8 @@
                                             </div>
                                             <div>
                                                 <span class="font-weight-bold text-dark d-block">
-                                                    {{ $student->first_name }} {{ $student->father_name }} {{ $student->grandfather_name }} {{ $student->family_name }}
+                                                    {{ $student->first_name }} {{ $student->father_name }}
+                                                    {{ $student->grandfather_name }} {{ $student->family_name }}
                                                 </span>
                                                 <small class="text-muted">تاريخ الميلاد:
                                                     {{ $student->date_of_birth }}</small>
@@ -83,6 +122,7 @@
                                             <div class="text-muted">{{ $student->street }}</div>
                                         </div>
                                     </td>
+
                                     <td>
                                         @if ($student->phoneNumbers && $student->phoneNumbers->count() > 0)
                                             <div class="d-flex flex-wrap gap-1">
@@ -116,13 +156,13 @@
                                                 {{-- <a class="dropdown-item py-2 d-flex align-items-center"
                                                     href="{{ route('students.assignments.data', $student->id) }}">
                                                     <i class="fas fa-eye text-dark ml-2"></i> <span>عرض التعيينات</span>
-                                                </a>--}}
+                                                </a> --}}
 
                                                 <a class="dropdown-item py-2 d-flex align-items-center"
-                                                    href=" ">
-                                                    <i class="fas fa-plus-circle text-primary ml-2"></i>
-                                                    <span>تسجيل الطالب</span>
-                                                </a> 
+                                                    href="{{ route('students.show', $student->id) }} ">
+                                                    <i class="fas fa-eye text-dark ml-2"></i>
+                                                    <span>تفاصيل الطالب</span>
+                                                </a>
 
                                                 <a class="dropdown-item py-2 d-flex align-items-center"
                                                     href="{{ route('students.edit', $student->id) }}">
@@ -150,7 +190,7 @@
                                                             <i class="fas fa-exclamation-circle fa-4x"></i>
                                                         </div>
                                                         <h3 class="font-weight-bold">تأكيد الحذف</h3>
-                                                        <p class="text-muted">هل أنت متأكد من حذف المعلم <br>
+                                                        <p class="text-muted">هل أنت متأكد من حذف الطالب <br>
                                                             <strong class="text-dark">({{ $student->first_name }}
                                                                 {{ $student->family_name }})</strong>؟
                                                         </p>
@@ -197,8 +237,6 @@
     </div>
 
     <style>
-        <style>
-
         /* محاذاة عامة للجدول */
         .table th,
         .table td {
@@ -233,5 +271,5 @@
             gap: 0.5rem;
         }
     </style>
-    </style>
+
 @endsection

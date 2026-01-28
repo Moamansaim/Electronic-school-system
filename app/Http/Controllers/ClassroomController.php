@@ -51,8 +51,9 @@ class ClassroomController extends Controller
     public function edit(Classroom $classroom): View
     {
         $grade_levels = $this->getGradeLevels();
+        $teachers = $this->getTeachers();
 
-        return view('classroom.edit_classroom', compact('classroom', 'grade_levels'));
+        return view('classroom.edit_classroom', compact('classroom', 'grade_levels', 'teachers'));
     }
 
     public function update(ClassroomRequest $request, Classroom $classroom): RedirectResponse
@@ -67,7 +68,8 @@ class ClassroomController extends Controller
             return redirect()
                 ->back()
                 ->withInput()
-                ->with('error', 'حدث خطأ أثناء تعديل الصف الدراسي، يرجى المحاولة لاحقًا.');
+                ->with('error', $e->getMessage());
+            //  ->with('error', 'حدث خطأ أثناء تعديل الصف الدراسي، يرجى المحاولة لاحقًا.');
         }
     }
 

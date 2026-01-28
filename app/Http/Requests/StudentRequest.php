@@ -62,7 +62,6 @@ class StudentRequest extends FormRequest
                 'required',
                 'array',
                 'min:1',
-
             ],
             'phone_numbers.*' => [
                 'required',
@@ -73,6 +72,8 @@ class StudentRequest extends FormRequest
                     ->whereNot('student_id', $this->route('student')),
 
             ],
+            'grade_level_id' => ['required', 'integer', 'exists:grade_levels,id'],
+            'classroom_id' => ['required', 'integer', 'exists:classrooms,id'],
 
         ];
     }
@@ -91,6 +92,8 @@ class StudentRequest extends FormRequest
             'street' => 'الشارع',
             'phone_numbers' => 'أرقام الجوال',
             'phone_numbers.*' => 'رقم الجوال',
+            'grade_level_id' => 'المرحلة الدراسية',
+            'classroom_id' => 'الصف الدراسي',
         ];
     }
 
@@ -144,6 +147,15 @@ class StudentRequest extends FormRequest
             'phone_numbers.*.digits' => 'رقم الجوال يجب أن يتكون من :digits أرقام.',
             'phone_numbers.*.distinct' => 'لا يجوز تكرار رقم الجوال.',
             'phone_numbers.*.unique' => 'رقم الجوال مستخدم مسبقاً.',
+
+            'grade_level_id.required' => 'يجب اختيار :attribute.',
+            'grade_level_id.exists' => ':attribute المحددة غير موجودة.',
+            'grade_level_id.integer' => 'عذراً، معرف :attribute يجب أن يكون رقماً صحيحاً.',
+
+            'classroom_id.required' => 'يجب اختيار :attribute.',
+            'classroom_id.exists' => ':attribute المحددة غير موجودة.',
+            'classroom_id.integer' => 'عذراً، معرف :attribute يجب أن يكون رقماً صحيحاً.',
+
         ];
     }
 }

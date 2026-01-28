@@ -34,7 +34,7 @@
                                 <small class="text-danger mt-1 d-block">{{ $message }}</small>
                             @enderror
                         </div>
-
+                     
                         <div class="col-md-6 mb-4">
                             <label class="form-label font-weight-bold mb-2">اسم الأب </label>
                             <div class="input-group">
@@ -194,7 +194,8 @@
                                             </span>
                                         </div>
                                         <input type="text" value="{{ $phoneNumber->phone_number }}"
-                                            name="phone_numbers[]" class="form-control border-left-0 @error('phone_numbers.*') is-invalid @enderror"
+                                            name="phone_numbers[]"
+                                            class="form-control border-left-0 @error('phone_numbers.*') is-invalid @enderror"
                                             placeholder="أدخل رقم الجوال">
                                         <div class="input-group-append">
                                             <button type="button" class="btn btn-danger remove-phone">

@@ -106,9 +106,12 @@
 
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item dropdown px-3">
-                    <a class="btn btn-outline-danger btn-sm rounded-pill px-3" href="#">
-                        <i class="fas fa-sign-out-alt ml-1"></i> تسجيل الخروج
-                    </a>
+                    <form method="post" action="{{ route('logout') }}">
+                        <button class="btn btn-danger btn-sm rounded-pill px-3" href="{{ route('logout') }}">
+                            @csrf
+                            <i class="fas fa-sign-out-alt ml-1"></i> تسجيل الخروج
+                        </button>
+                    </form>
                 </li>
             </ul>
         </nav>
@@ -126,9 +129,13 @@
                             <i class="fas fa-user-shield text-primary"></i>
                         </div>
                     </div>
-                    <div class="info px-3">
-                        <a href="#" class="d-block font-weight-bold">مدير النظام</a>
-                    </div>
+                    {{-- <div class="info px-3 " >
+                        @php
+                            $teacher = Auth::user()->teacher;
+                        @endphp
+                        <a href="#"
+                            class="d-block font-weight-bold ">{{ $teacher ? $teacher->first_name . ' ' . $teacher->father_name . ' '  . $teacher->family_name : ' مستخدم نظام ' }}</a>
+                    </div> --}}
                 </div>
 
                 <nav class="mt-2">

@@ -1,23 +1,12 @@
 <?php
 
 use App\Http\Controllers\ClassroomController;
+use App\Http\Controllers\ClassScheduleController;
 use App\Http\Controllers\GradeLevelController;
-use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\TeacherController;
 use Illuminate\Support\Facades\Route;
-
-Route::get('/', function () {
-    return view('layout-cms.main-layout');
-});
-
-// Route::prefix('cms')
-//     ->controller(GradeLevelController::class)
-//     ->as('grade_levels.')
-//     ->group(function () {
-//         Route::resource('/', GradeLevelController::class);
-//     });
 
 Route::prefix('cms')->group(function () {
 
@@ -28,6 +17,14 @@ Route::prefix('cms')->group(function () {
         'teachers' => TeacherController::class,
         'students' => StudentController::class,
     ]);
+
+    Route::resource('class-schedules', ClassScheduleController::class)
+        ->except(['create', 'show']);
+
+    Route::get('class-schedules/create/{teacher_id}', [ClassScheduleController::class, 'create'])
+        ->name('class-schedules.create');
+    Route::get('class-schedules/{teacher_id}', [ClassScheduleController::class, 'show'])
+        ->name('class-schedules.show');
 
     Route::prefix('teachers')
         ->controller(TeacherController::class)
@@ -52,16 +49,6 @@ Route::prefix('cms')->group(function () {
             Route::get('grade-levels/{grade_level_id}/data', 'getDataByGrade')
                 ->name('get-data-by-grade');
         });
-});
-
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
-
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
 require __DIR__.'/auth.php';

@@ -18,6 +18,7 @@ return new class extends Migration
             $table->foreignId('subject_id')
                 ->constrained('subjects', 'id')
                 ->cascadeOnDelete();
+            $table->primary(['student_id', 'subject_id']);
             $table->timestamps();
         });
     }

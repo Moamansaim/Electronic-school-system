@@ -92,6 +92,7 @@ class TeacherRequest extends FormRequest
             'street' => 'الشارع',
             'phone_numbers' => 'أرقام الجوال',
             'phone_numbers.*' => 'رقم الجوال',
+            'password' => 'كلمة المرور',
         ];
     }
 

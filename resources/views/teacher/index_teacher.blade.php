@@ -5,6 +5,43 @@
     <div class="container-fluid p-4">
         <x-grade-level-success-component />
 
+
+        @if (session('generated_school_id'))
+            <div class="alert alert-success"
+                style="background: #e6fffa; border: 1px solid #38b2ac; padding: 20px; border-radius: 8px;">
+                <h4 style="color: #2c7a7b; font-weight: bold;">✅ تم إنشاء الحساب!</h4>
+                <p style="color: #2c7a7b; font-weight: bold;">بيانات الدخول جاهزة للنسخ:</p>
+
+                <div id="fullAccountInfo" class="p-3 bg-white border rounded mt-2">
+                    <strong>الرقم المدرسي الخاص بالمعلم:</strong> {{ session('generated_school_id') }} <br>
+                    <strong>كلمة المرور:</strong> {{ session('generated_password') }}
+                </div>
+
+                <button onclick="copyAllInfo()" class="btn btn-primary mt-3"
+                    style="background: #3182ce; color: white; padding: 8px 15px; border-radius: 5px; border: none; cursor: pointer;">
+                    نسخ البيانات كاملة
+                </button>
+            </div>
+
+            <script>
+                function copyAllInfo() {
+                    // تنسيق النص المراد نسخه (الإيميل في سطر وكلمة المرور في سطر)
+                    const school_id = "{{ session('generated_school_id') }}";
+                    const pass = "{{ session('generated_password') }}";
+                    const textToCopy = "SchoolID: " + school_id + "\nPassword: " + pass;
+
+                    // استخدام Clipboard API للنسخ
+                    navigator.clipboard.writeText(textToCopy).then(function () {
+                        alert('تم نسخ الإيميل وكلمة المرور معاً بنجاح!');
+                    }).catch(err => {
+                        console.error('فشل النسخ: ', err);
+                    });
+                }
+            </script>
+        @endif
+
+
+
         <div class="card border-0 shadow-sm" style="border-radius: 15px;">
             <div class="card-header bg-white border-0 py-4">
                 <div class="row align-items-center">
@@ -60,7 +97,7 @@
                                             </div>
                                             <div>
                                                 <span class="font-weight-bold text-dark d-block">
-                                                    {{ $teacher->first_name }} {{ $teacher->father_name }} {{ $teacher->grandfather_name }} {{ $teacher->family_name }}
+                                                    {{ $teacher->full_name }}
                                                 </span>
                                                 <small class="text-muted">تاريخ الميلاد:
                                                     {{ $teacher->date_of_birth }}</small>
@@ -109,8 +146,7 @@
                                                 aria-labelledby="dropdownMenuButton{{ $teacher->id }}"
                                                 style="border-radius: 12px; min-width: 180px; z-index: 1050; text-align: right;">
 
-                                                <h6
-                                                    class="dropdown-header text-xs text-uppercase text-muted font-weight-bold">
+                                                <h6 class="dropdown-header text-xs text-uppercase text-muted font-weight-bold">
                                                     الخيارات</h6>
 
                                                 <a class="dropdown-item py-2 d-flex align-items-center"
@@ -122,6 +158,17 @@
                                                     href="{{ route('teachers.assignment', $teacher->id) }}">
                                                     <i class="fas fa-plus-circle text-primary ml-2"></i>
                                                     <span>إضافة تعيين</span>
+                                                </a>
+
+                                                <a class="dropdown-item py-2 d-flex align-items-center"
+                                                    href="{{ route('class-schedules.create', $teacher->id) }}">
+                                                    <i class="fas fa-plus-circle text-primary ml-2"></i>
+                                                    <span>إضافة حصة دراسية</span>
+                                                </a>
+
+                                                <a class="dropdown-item py-2 d-flex align-items-center"
+                                                    href="{{ route('class-schedules.show', $teacher->id) }}">
+                                                    <i class="fas fa-eye text-dark ml-2"></i> <span>عرض جدول الحصص</span>
                                                 </a>
 
                                                 <a class="dropdown-item py-2 d-flex align-items-center"
@@ -141,8 +188,8 @@
                                             </div>
                                         </div>
 
-                                        <div class="modal fade" id="deleteModal{{ $teacher->id }}" tabindex="-1"
-                                            role="dialog" aria-hidden="true">
+                                        <div class="modal fade" id="deleteModal{{ $teacher->id }}" tabindex="-1" role="dialog"
+                                            aria-hidden="true">
                                             <div class="modal-dialog modal-dialog-centered" role="document">
                                                 <div class="modal-content border-0 shadow" style="border-radius: 15px;">
                                                     <div class="modal-body p-5 text-center">
@@ -155,8 +202,7 @@
                                                                 {{ $teacher->family_name }})</strong>؟
                                                         </p>
                                                         <div class="d-flex justify-content-center mt-4">
-                                                            <button type="button"
-                                                                class="btn btn-light px-4 ml-2 rounded-pill"
+                                                            <button type="button" class="btn btn-light px-4 ml-2 rounded-pill"
                                                                 data-dismiss="modal">إلغاء</button>
 
                                                             <form action="{{ route('teachers.destroy', $teacher->id) }}"

@@ -29,6 +29,10 @@ return new class extends Migration
                 ->nullable()
                 ->constrained('classrooms', 'id')
                 ->nullOnDelete();
+            $table->foreignId('user_id')
+                ->nullable()
+                ->constrained('users', 'id')
+                ->nullOnDelete();
             $table->softDeletes();
             $table->timestamps();
         });

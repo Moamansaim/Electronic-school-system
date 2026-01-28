@@ -8,7 +8,7 @@
         <div class="card border-0 shadow-sm" style="border-radius: 15px; overflow: hidden;">
             <div class="card-header bg-white border-bottom py-3">
                 <h5 class="mb-0 text-primary font-weight-bold">
-                    <i class="fas fa-plus-circle mr-2"></i> إضافة مرحلة دراسية 
+                    <i class="fas fa-plus-circle mr-2"></i> إضافة مرحلة دراسية
                 </h5>
             </div>
 
@@ -41,7 +41,7 @@
                         <i class="fas fa-arrow-right mr-1"></i> العودة للقائمة
                     </a>
                     <button type="submit" class="btn btn-primary px-5 shadow-sm" style="border-radius: 8px;">
-                      <i class="fas fa-save ml-2"></i>  حفظ   
+                        <i class="fas fa-save ml-2"></i> حفظ
                     </button>
                 </div>
             </form>

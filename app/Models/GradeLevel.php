@@ -41,17 +41,11 @@ class GradeLevel extends Model
             ->translatedFormat('l، j F Y g:i a');
     }
 
-    /**
-     * علاقة المرحلة بالصفوف الدراسية
-     */
     public function classrooms(): HasMany
     {
         return $this->hasMany(Classroom::class);
     }
 
-    /**
-     * علاقة المرحلة بالمواد الدراسية
-     */
     public function subjects(): HasMany
     {
         return $this->hasMany(Subject::class, 'grade_level_id', 'id');
@@ -60,5 +54,10 @@ class GradeLevel extends Model
     public function teacherAssignments()
     {
         return $this->HasMany(TeacherAssignment::class);
+    }
+
+    public function students(): HasMany
+    {
+        return $this->hasMany(Student::class);
     }
 }

@@ -51,18 +51,15 @@ class SubjectRequest extends FormRequest
     public function messages(): array
     {
         return [
-            // اسم المادة
             'name.required' => 'حقل :attribute مطلوب.',
             'name.string' => 'يجب أن يكون :attribute نصاً.',
             'name.min' => ':attribute يجب أن لا يقل عن :min أحرف.',
             'name.max' => ':attribute يجب أن لا يتجاوز :max حرفاً.',
             'name.unique' => 'قيمة :attribute مستخدمة من قبل.',
             'name.regex' => 'صيغة :attribute غير صحيحة، يجب أن تكون بالشكل: مادة [الاسم] - [المرحلة]، وبدون رموز خاصة.',
-
-            // المرحلة الدراسية
             'grade_level_id.required' => 'يجب اختيار :attribute.',
             'grade_level_id.exists' => ':attribute المحددة غير موجودة.',
-
+            'grade_level_id.integer' => 'عذراً، معرف :attribute يجب أن يكون رقماً صحيحاً.',
         ];
     }
 }

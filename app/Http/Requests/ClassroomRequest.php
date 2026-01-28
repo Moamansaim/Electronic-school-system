@@ -8,7 +8,7 @@ use Illuminate\Validation\Rule;
 
 class ClassroomRequest extends FormRequest
 {
-    protected function prepareForValidation()
+    protected function prepareForValidation(): void
     {
         $this->merge([
             'name' => Str::squish($this->name),
@@ -36,7 +36,8 @@ class ClassroomRequest extends FormRequest
             'teacher_id' => [
                 'nullable',
                 'integer',
-                'unique:classrooms,teacher_id',
+                Rule::unique('classrooms', 'teacher_id')
+                    ->ignore($this->route('classroom')),
                 'exists:teachers,id',
             ],
         ];

@@ -5,18 +5,24 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StudentRequest;
 use App\Models\GradeLevel;
 use App\Models\Student;
+use App\Models\User;
 use Exception;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
+use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 class StudentController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index(Request $request): View
     {
-        $students = Student::with('phoneNumbers')->select(
+        $students = Student::with(['phoneNumbers', 'gradeLevel:id,name', 'classroom:id,name'])->select(
             'id',
             'first_name',
             'father_name',
@@ -27,6 +33,8 @@ class StudentController extends Controller
             'city',
             'district',
             'street',
+            'grade_level_id',
+            'classroom_id',
             'created_at'
         )->search($request->input('search'))
             ->paginate(10);
@@ -37,7 +45,7 @@ class StudentController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(): View
     {
         $grade_levels = GradeLevel::select('id', 'name')->get();
 
@@ -53,7 +61,7 @@ class StudentController extends Controller
      * Loads the grade level by ID along with related classrooms and subjects.
      * Returns the data as JSON for use in dynamic forms or AJAX requests.
      */
-    public function getDataByGrade($grade_level_id)
+    public function getDataByGrade($grade_level_id): JsonResponse
     {
         $grade_level = GradeLevel::findOrFail($grade_level_id);
 
@@ -68,15 +76,22 @@ class StudentController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StudentRequest $studentRequest)
+    public function store(StudentRequest $studentRequest): RedirectResponse
     {
         try {
             DB::beginTransaction();
 
-            $data = $studentRequest->validated();
+            $generated_school_id = strtolower(Str::random(4).''.$studentRequest->national_id);
+            $generated_password = Str::random(12);
 
-                        dd($data);
+            $user = User::create([
+                'school_id' => $generated_school_id,
+                'password' => Hash::make($generated_password),
+            ]);
 
+            $studentRequest->merge(['user_id' => $user->id]);
+
+            $data = $studentRequest->all();
 
             $student = Student::create($data);
 
@@ -89,16 +104,20 @@ class StudentController extends Controller
             }
 
             if ($studentRequest->has('subject_ids')) {
-                $student->subjects()->sync([
-                    'subject_id' => $studentRequest->subject_ids
-                ]);
+                $student->subjects()->sync(
+                    $studentRequest->subject_ids
+                );
             }
-
 
             DB::commit();
 
             return redirect()->route('students.index')
-                ->with('success', 'تم إضافة الطالب   بنجاح');
+                ->with([
+                    'success' => 'تم إضافة الطالب   بنجاح',
+                    'generated_school_id' => $generated_school_id,
+                    'generated_password' => $generated_password,
+
+                ]);
         } catch (Exception $e) {
             DB::rollBack();
 
@@ -110,23 +129,27 @@ class StudentController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Student $student)
+    public function show(Student $student): View
     {
-        //
+        $student = $student->load(['gradeLevel', 'classroom']);
+
+        return view('student.details', compact('student'));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Student $student)
+    public function edit(Student $student): View
     {
-        return view('student.edit_student', compact('student'));
+        $grade_levels = $this->getGradeLevels();
+
+        return view('student.edit_student', compact('student', 'grade_levels'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(StudentRequest $studentRequest, Student $student)
+    public function update(StudentRequest $studentRequest, Student $student): RedirectResponse
     {
         try {
             DB::beginTransaction();
@@ -146,11 +169,13 @@ class StudentController extends Controller
                 }
             }
 
+            $student->subjects()->sync($studentRequest->input('subject_ids', []));
+
             DB::commit();
 
-            $full_name = $student->first_name . $student->father_name . ' ' . ' ' . $student->family_name;
+            $full_name = $student->first_name.$student->father_name.' '.' '.$student->family_name;
 
-            return redirect()->route('teachers.index')
+            return redirect()->route('students.index')
                 ->with('success', "تم تحديث بيانات الطالب ({$full_name}) بنجاح");
         } catch (Exception $e) {
             DB::rollBack();
@@ -163,17 +188,22 @@ class StudentController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Student $student)
+    public function destroy(Student $student): RedirectResponse
     {
         try {
 
             $student->delete();
-            $full_name = $student->first_name . ' ' . $student->family_name;
+            $full_name = $student->first_name.' '.$student->family_name;
 
             return redirect()->back()->with('success', "تم حذف الطالب ({$full_name}) بنجاح");
         } catch (Exception $e) {
             return redirect()->back()
                 ->with('error', 'حدث خطأ أثناء عملية حذف  الطالب يرجى المحاولة لاحقًا.');
         }
+    }
+
+    private function getGradeLevels()
+    {
+        return GradeLevel::select('id', 'name')->orderBy('name')->get();
     }
 }
