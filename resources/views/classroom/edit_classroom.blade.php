@@ -68,8 +68,8 @@
                                     <option value="" selected disabled>اختر مربي الفصل...</option>
                                     @foreach ($teachers as $teacher)
                                         <option value="{{ $teacher->id }}"
-                                            {{ old('teacher_id' , $teacher->id ) == $teacher->id ? 'selected' : '' }}>
-                                            {{ $teacher->first_name . ' ' . $teacher->father_name . ' ' . $teacher->grandfather_name . ' ' . $teacher->family_name }}
+                                            {{ old('teacher_id' , $teacher->id ) == $classroom->teacher_id ? 'selected' : '' }}>
+                                            {{ $teacher->full_name  }}
                                         </option>
                                     @endforeach
                                 </select>

@@ -1,14 +1,17 @@
 <?php
 
+use App\Enums\ExamType;
 use App\Http\Controllers\ClassroomController;
 use App\Http\Controllers\ClassScheduleController;
+use App\Http\Controllers\ExamController;
 use App\Http\Controllers\GradeLevelController;
+use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\TeacherController;
 use Illuminate\Support\Facades\Route;
 
-Route::prefix('cms')->group(function () {
+Route::middleware('auth')->prefix('cms')->group(function () {
 
     Route::resources([
         'grade_levels' => GradeLevelController::class,
@@ -16,16 +19,21 @@ Route::prefix('cms')->group(function () {
         'subjects' => SubjectController::class,
         'teachers' => TeacherController::class,
         'students' => StudentController::class,
+        'exams' => ExamController::class,
+        'questions' => QuestionController::class,
     ]);
 
+    //class-schedules
     Route::resource('class-schedules', ClassScheduleController::class)
-        ->except(['create', 'show']);
-
+        ->except(['create', 'show', 'edit']);
     Route::get('class-schedules/create/{teacher_id}', [ClassScheduleController::class, 'create'])
         ->name('class-schedules.create');
     Route::get('class-schedules/{teacher_id}', [ClassScheduleController::class, 'show'])
         ->name('class-schedules.show');
+    Route::get('class-schedules/{class_schedule}/{teacher_id}/edit', [ClassScheduleController::class, 'edit'])
+        ->name('class-schedules.edit');
 
+    //teachers
     Route::prefix('teachers')
         ->controller(TeacherController::class)
         ->as('teachers.')
@@ -42,6 +50,11 @@ Route::prefix('cms')->group(function () {
             Route::delete('{teacher_assignment_id}/assignment', 'destroyTeacherAssignment')
                 ->name('destroyAssignment');
         });
+
+    Route::get('exam/{id}/questions', [ExamController::class,  'exam_questions'])
+        ->name('exam.questions');
+
+    //students
     Route::prefix('students')
         ->controller(StudentController::class)
         ->as('students.')
@@ -51,4 +64,4 @@ Route::prefix('cms')->group(function () {
         });
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

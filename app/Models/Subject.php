@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Subject extends Model
 {
@@ -44,7 +45,7 @@ class Subject extends Model
             ]);
     }
 
-    public function teacherAssignments()
+    public function teacherAssignments(): HasMany
     {
         return $this->HasMany(TeacherAssignment::class);
     }
@@ -70,4 +71,10 @@ class Subject extends Model
             'id'
         );
     }
+
+    public function exams()
+    {
+        return $this->hasMany(Exam::class);
+    }
+    
 }

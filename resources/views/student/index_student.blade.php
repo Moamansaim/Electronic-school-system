@@ -98,8 +98,8 @@
                                             </div>
                                             <div>
                                                 <span class="font-weight-bold text-dark d-block">
-                                                    {{ $student->first_name }} {{ $student->father_name }}
-                                                    {{ $student->grandfather_name }} {{ $student->family_name }}
+                                                    {{ $student->full_name }} 
+                                                   
                                                 </span>
                                                 <small class="text-muted">تاريخ الميلاد:
                                                     {{ $student->date_of_birth }}</small>

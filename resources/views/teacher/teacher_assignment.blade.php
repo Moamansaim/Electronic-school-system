@@ -18,7 +18,7 @@
                         <div class="col-md-12 mb-4">
                             <label class="form-label font-weight-bold">اسم المعلم</label>
                             <input type="text" class="form-control bg-light" readonly
-                                value="{{ $teacher->first_name . ' ' . $teacher->father_name . ' ' . $teacher->family_name }}">
+                                value="{{ $teacher->full_name}}">
                             <input type="hidden" name="teacher_id" value="{{ $teacher->id }}">
                         </div>
                     </div>

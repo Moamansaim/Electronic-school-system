@@ -96,8 +96,7 @@
         <nav class="main-header navbar navbar-expand navbar-white navbar-light py-3">
             <ul class="navbar-nav">
                 <li class="nav-item">
-                    <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i
-                            class="fas fa-bars"></i></a>
+                    <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
                 </li>
                 <li class="nav-item d-none d-sm-inline-block">
                     <a href="#" class="nav-link font-weight-600 text-dark">لوحة التحكم الرئيسية</a>
@@ -129,13 +128,15 @@
                             <i class="fas fa-user-shield text-primary"></i>
                         </div>
                     </div>
-                    {{-- <div class="info px-3 " >
+                    @auth
+                         <div class="info px-3 ">
                         @php
                             $teacher = Auth::user()->teacher;
                         @endphp
-                        <a href="#"
-                            class="d-block font-weight-bold ">{{ $teacher ? $teacher->first_name . ' ' . $teacher->father_name . ' '  . $teacher->family_name : ' مستخدم نظام ' }}</a>
-                    </div> --}}
+                        <a href="#" class="d-block font-weight-bold ">{{ $teacher ? $teacher->full_name : ' مستخدم نظام ' }}</a>
+                    </div>
+                    @endauth
+                   
                 </div>
 
                 <nav class="mt-2">
@@ -205,6 +206,24 @@
                                     <a href="{{ route('students.index') }}" class="nav-link">
                                         <i class="fas fa-user-edit nav-icon"></i>
                                         <p>بيانات الطلاب</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <i class="nav-icon fas fa-file-alt"></i>
+                                <p>
+                                    إدارة الاختبارات الطلابية
+                                    <i class="fas fa-angle-left right"></i>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a href="{{ route('exams.index') }}" class="nav-link">
+                                        <i class="fas fa-tasks nav-icon"></i>
+                                        <p>بيانات الاختبارات</p>
                                     </a>
                                 </li>
                             </ul>

@@ -15,7 +15,7 @@ class Classroom extends Model
 
     protected $fillable = ['name', 'grade_level_id', 'teacher_id'];
 
-    public function scopeSearch(Builder $builder, $term)
+    public function scopeSearch(Builder $builder, $term): void
     {
         $term = trim(string: $term);
         $builder->when($term, function ($query, $term) {
@@ -26,7 +26,7 @@ class Classroom extends Model
         });
     }
 
-    public function teacherAssignments()
+    public function teacherAssignments(): HasMany
     {
         return $this->HasMany(TeacherAssignment::class);
     }

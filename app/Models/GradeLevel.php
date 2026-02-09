@@ -51,7 +51,7 @@ class GradeLevel extends Model
         return $this->hasMany(Subject::class, 'grade_level_id', 'id');
     }
 
-    public function teacherAssignments()
+    public function teacherAssignments(): HasMany
     {
         return $this->HasMany(TeacherAssignment::class);
     }

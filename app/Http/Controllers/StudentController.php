@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StudentRequest;
+use App\Models\ClassSchedule;
 use App\Models\GradeLevel;
 use App\Models\Student;
 use App\Models\User;
@@ -37,6 +38,7 @@ class StudentController extends Controller
             'classroom_id',
             'created_at'
         )->search($request->input('search'))
+            ->latest()
             ->paginate(10);
 
         return view('student.index_student', compact('students'));
@@ -133,7 +135,29 @@ class StudentController extends Controller
     {
         $student = $student->load(['gradeLevel', 'classroom']);
 
-        return view('student.details', compact('student'));
+        $rawSchedules = ClassSchedule::where('class_schedules.classroom_id', $student->classroom_id)
+            ->join('teacher_assignments', function ($join) {
+                $join->on('class_schedules.teacher_id', '=', 'teacher_assignments.teacher_id')
+                    ->on('class_schedules.classroom_id', '=', 'teacher_assignments.classroom_id');
+            })
+            ->join('teachers', 'class_schedules.teacher_id', '=', 'teachers.id')
+            ->join('subjects', 'teacher_assignments.subject_id', '=', 'subjects.id')
+            ->select(
+                'class_schedules.day',
+                'class_schedules.class_schedule',
+                'subjects.name as subject_name',
+                DB::raw("CONCAT_WS(' ', teachers.first_name, teachers.father_name,teachers.grandfather_name , teachers.family_name) as teacher_full_name")
+            )
+            ->get();
+
+        $schedules = [];
+        foreach ($rawSchedules as $item) {
+            $schedules[$item->day][$item->class_schedule] = $item;
+        }
+        $days = ['السبت', 'الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس'];
+        $periods = ['الحصة الأولى', 'الحصة الثانية', 'الحصة الثالثة', 'الحصة الرابعة', 'الحصة الخامسة', 'الحصة السادسة'];
+
+        return view('student.details', compact('student', 'schedules', 'days', 'periods'));
     }
 
     /**

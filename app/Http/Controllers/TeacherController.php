@@ -35,6 +35,7 @@ class TeacherController extends Controller
             'street',
             'created_at'
         )->search($request->input('search'))
+            ->latest()
             ->paginate(10);
 
         return view('teacher.index_teacher', compact('teachers'));
@@ -140,7 +141,7 @@ class TeacherController extends Controller
 
             DB::beginTransaction();
 
-            $generated_school_id = strtolower(Str::random(4).''.$teacherRequest->national_id);
+            $generated_school_id = strtolower(Str::random(4) . '' . $teacherRequest->national_id);
             $generated_password = Str::random(12);
 
             $user = User::create([
@@ -175,8 +176,7 @@ class TeacherController extends Controller
             DB::rollBack();
 
             return back()->withInput()
-                ->with('error', "{$e->getMessage()}");
-            // ->with('error', 'حدث خطأ أثناء حفظ البيانات، يرجى المحاولة لاحقًا. ');
+                ->with('error', 'حدث خطأ أثناء حفظ البيانات، يرجى المحاولة لاحقًا. ');
         }
     }
 
@@ -221,7 +221,7 @@ class TeacherController extends Controller
 
             DB::commit();
 
-            $full_name = $teacher->first_name.' '.$teacher->family_name;
+            $full_name = $teacher->full_name;
 
             return redirect()->route('teachers.index')
                 ->with('success', "تم تحديث بيانات المعلم ({$full_name}) بنجاح");
@@ -241,7 +241,7 @@ class TeacherController extends Controller
         try {
 
             $teacher->delete();
-            $full_name = $teacher->first_name.' '.$teacher->family_name;
+            $full_name = $teacher->full_name;
 
             return redirect()->back()->with('success', "تم حذف المعلم ({$full_name}) بنجاح");
         } catch (Exception $e) {

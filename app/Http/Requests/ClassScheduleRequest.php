@@ -38,7 +38,7 @@ class ClassScheduleRequest extends FormRequest
                 'exists:teachers,id',
             ],
             'classroom_id' => [
-                'nullable',
+                'required',
                 'integer',
                 'exists:classrooms,id',
             ],

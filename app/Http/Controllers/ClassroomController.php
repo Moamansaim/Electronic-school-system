@@ -35,7 +35,14 @@ class ClassroomController extends Controller
     public function store(ClassroomRequest $request): RedirectResponse
     {
         try {
-            Classroom::create($request->validated());
+
+            $data = $request->validated();
+
+            if (empty($data['teacher_id'])) {
+                $data['teacher_id'] = null;
+            }
+
+            Classroom::create($data);
 
             return redirect()
                 ->route('classrooms.index')
@@ -59,7 +66,13 @@ class ClassroomController extends Controller
     public function update(ClassroomRequest $request, Classroom $classroom): RedirectResponse
     {
         try {
-            $classroom->update($request->validated());
+
+            $data = $request->validated();
+
+            if (empty($data['teacher_id'])) {
+                $data['teacher_id'] = null;
+            }
+            $classroom->update($data);
 
             return redirect()
                 ->route('classrooms.index')
@@ -68,8 +81,7 @@ class ClassroomController extends Controller
             return redirect()
                 ->back()
                 ->withInput()
-                ->with('error', $e->getMessage());
-            //  ->with('error', 'حدث خطأ أثناء تعديل الصف الدراسي، يرجى المحاولة لاحقًا.');
+                ->with('error', 'حدث خطأ أثناء تعديل الصف الدراسي، يرجى المحاولة لاحقًا.');
         }
     }
 

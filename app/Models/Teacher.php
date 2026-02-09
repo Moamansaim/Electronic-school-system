@@ -69,4 +69,9 @@ class Teacher extends Model
     {
         return $this->HasMany(ClassSchedule::class);
     }
+
+    public function exams(): HasMany
+    {
+        return $this->HasMany(Exam::class);
+    }
 }
