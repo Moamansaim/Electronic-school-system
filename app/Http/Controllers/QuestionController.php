@@ -47,39 +47,42 @@ class QuestionController extends Controller
 
     public function edit(Question $question): View
     {
-        // نستخدم العلاقة لجلب الخيارات
-        $options = $question->options;
-        return view('question.edit_question', compact('question', 'options'));
+        $question->load('options');
+        return view('question.edit_question', compact('question'));
     }
 
-    public function update(QuestionRequest $questionRequest, Question $question): RedirectResponse
+    public function update(QuestionRequest $request, Question $question)
     {
-        try {
-            DB::transaction(function () use ($questionRequest, $question) {
-                $question->update($questionRequest->validated());
+        DB::transaction(function () use ($request, $question) {
 
-                if ($questionRequest->question_type === 'multiple_choice') {
-                    $question->options()->delete();
+            // 1. تحديث بيانات السؤال الأساسية
+            $question->update($request->validated());
 
-                    foreach ($questionRequest->options as $index => $text) {
-                        $question->options()->create([
-                            'option_text' => $text,
-                            'is_correct'  => ($questionRequest->is_correct == $index) ? 1 : 0,
-                        ]);
-                    }
+            // 2. حذف جميع الخيارات المرتبطة بهذا السؤال (تصفير الخيارات)
+            $question->options()->delete();
+
+            // 3. إذا كان النوع multiple_choice، نقوم بإضافة الخيارات المرسلة من النموذج كخيارات جديدة
+            if ($request->question_type === 'multiple_choice' && !empty($request->options)) {
+
+                foreach ($request->options as $index => $text) {
+                    // منطق تحديد الإجابة الصحيحة:
+                    // نفترض أن $request->is_correct يحتوي على 'index' الخيار الصحيح (مثلاً: 0 أو 1 أو 2)
+                    $isCorrect = ($request->is_correct == $index) ? 1 : 0;
+
+                    $question->options()->create([
+                        'option_text' => $text,
+                        'is_correct'  => $isCorrect,
+                    ]);
                 }
-            });
+            }
+        });
 
-            return back()->with('success', 'تم تحديث السؤال بنجاح');
-        } catch (\Exception $e) {
-            return back()->with('error', 'حدث خطأ أثناء التحديث، يرجى المحاولة لاحقاً.');
-        }
+        return redirect()->route('exam.questions', $question->exam_id)
+            ->with('success', 'تم تحديث السؤال والخيارات بنجاح');
     }
 
     public function destroy(Question $question): RedirectResponse
     {
-        // بفضل العلاقة (إذا كنت قد أضفت onDelete('cascade') في الميجريشن)، 
-        // سيتم حذف الخيارات تلقائياً، وإلا قم بحذفها يدوياً هنا
         $question->options()->delete();
         $question->delete();
 

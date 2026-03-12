@@ -11,15 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('options', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('question_id')
-                ->constrained('questions', 'id')
-                ->cascadeOnDelete();
-            $table->string('option_text');
-            $table->boolean('is_correct');
+        Schema::table('questions', function (Blueprint $table) {
             $table->softDeletes();
-            $table->timestamps();
         });
     }
 
@@ -28,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('options');
+        Schema::table('questions', function (Blueprint $table) {
+           $table->dropSoftDeletes();
+        });
     }
 };
