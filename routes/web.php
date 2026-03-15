@@ -8,6 +8,7 @@ use App\Http\Controllers\GradeLevelController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\SubjectController;
+use App\Http\Controllers\SummaryFileController;
 use App\Http\Controllers\TeacherController;
 use Illuminate\Support\Facades\Route;
 
@@ -53,6 +54,10 @@ Route::middleware('auth')->prefix('cms')->group(function () {
 
     Route::get('exam/{id}/questions', [ExamController::class,  'exam_questions'])
         ->name('exam.questions');
+
+
+    Route::post('subject/files/store', [SummaryFileController::class, 'store'])->name('files.store');
+    Route::get('subject/files/view/{id}', [SummaryFileController::class, 'viewFileSummary'])->name('files.view');
 
     //students
     Route::prefix('students')

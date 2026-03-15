@@ -1,36 +1,25 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>تسجيل الدخول | نظام المدرسة</title>
-
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>تسجيل الدخول | نظام المدرسة الإلكتروني</title>
     <link rel="stylesheet" href="{{ asset('cms/plugins/fontawesome-free/css/all.min.css') }}">
     <link rel="stylesheet" href="{{ asset('cms/dist/css/adminlte.min.css') }}">
-
+    <link rel="stylesheet" href="{{ asset('css/sweetalert2.min.css') }}">
     <style>
-        @font-face {
-            font-family: 'Cairo';
-            src: url("{{ asset('fonts/cairo/static/Cairo-Regular.ttf') }}") format('truetype');
-            font-weight: normal;
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap');
 
         body {
             font-family: 'Cairo', sans-serif;
-            background-color: #f4f6f9;
-            height: 100vh;
+            background: #f4f6f9;
             display: flex;
             align-items: center;
             justify-content: center;
+            height: 100vh;
             margin: 0;
-            /* خلفية هادئة تناسب النظام الأكاديمي */
-            background-image: linear-gradient(135deg, #e9ecef 25%, transparent 25%), 
-                              linear-gradient(225deg, #e9ecef 25%, transparent 25%), 
-                              linear-gradient(45deg, #e9ecef 25%, transparent 25%), 
-                              linear-gradient(315deg, #e9ecef 25%, #f4f6f9 25%);
-            background-position: 10px 0, 10px 0, 0 0, 0 0;
-            background-size: 20px 20px;
-            background-repeat: repeat;
         }
 
         .login-box {
@@ -39,14 +28,9 @@
 
         .card {
             border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
             border: none;
-        }
-
-        .card-header {
-            background: transparent;
-            border-bottom: none;
-            padding-top: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            background: #ffffff;
         }
 
         .brand-logo {
@@ -54,136 +38,212 @@
             color: #fff;
             width: 70px;
             height: 70px;
-            border-radius: 15px;
+            border-radius: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 2rem;
-            margin: 0 auto 15px;
-            box-shadow: 0 8px 15px rgba(44, 62, 80, 0.2);
+            margin: 0 auto 20px;
+        }
+
+        h4.text-center {
+            color: #2c3e50;
         }
 
         .form-control {
             border-radius: 10px;
-            height: 45px;
-            border: 1px solid #ced4da;
-            text-align: right;
+            height: 48px;
+            border: 1px solid #ddd;
         }
 
         .form-control:focus {
-            border-color: #3498db;
-            box-shadow: none;
-        }
-
-        .input-group-text {
-            border-radius: 0 10px 10px 0 !important;
-            background-color: #f8f9fa;
-        }
-
-        .form-control-appended {
-            border-radius: 10px 0 0 10px !important;
+            border-color: #2c3e50;
+            box-shadow: 0 0 5px rgba(44, 62, 80, 0.3);
         }
 
         .btn-primary {
-            background-color: #2c3e50;
-            border-color: #2c3e50;
+            background: #2c3e50;
+            border: none;
             border-radius: 10px;
-            height: 45px;
+            height: 48px;
             font-weight: bold;
-            transition: all 0.3s;
+            transition: background 0.3s;
         }
 
         .btn-primary:hover {
-            background-color: #34495e;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 10px rgba(0,0,0,0.15);
+            background: #34495e;
         }
 
-        .login-footer {
-            text-align: center;
-            margin-top: 20px;
-            color: #7f8c8d;
-            font-size: 0.85rem;
+        .btn-success {
+            background: #27ae60;
+            border: none;
+            border-radius: 10px;
+            height: 48px;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        .btn-success:hover {
+            background: #2ecc71;
+        }
+
+        .modal-content {
+            border-radius: 20px !important;
+            border: none;
+            padding: 20px;
+        }
+
+        .alert-info {
+            background: #eef3f7;
+            color: #2c3e50;
+            border-radius: 10px;
+            padding: 10px;
+        }
+
+        a {
+            color: #2c3e50;
+        }
+
+        a:hover {
+            color: #34495e;
+            text-decoration: none;
         }
     </style>
 </head>
+
 <body>
 
-<div class="login-box">
-    <div class="card">
-        <div class="card-header text-center">
-            <div class="brand-logo">
-                <i class="fas fa-graduation-cap"></i>
-            </div>
-            <h3 class="font-weight-bold">تسجيل الدخول</h3>
-            <p class="text-muted small">مرحباً بك في نظام المدرسة الإلكتروني</p>
-        </div>
-        
-        <div class="card-body">
-            @if (session('status'))
-                <div class="alert alert-success border-0 small text-right">
-                    {{ session('status') }}
-                </div>
-            @endif
+    <div class="login-box">
+        <div class="card p-4">
+            <div class="brand-logo"><i class="fas fa-graduation-cap"></i></div>
+            <h4 class="text-center font-weight-bold">تسجيل الدخول</h4>
+            <p class="text-center text-muted small mb-4">نظام إدارة المدرسة الذكي</p>
 
+            <!-- نموذج تسجيل الدخول -->
             <form action="{{ route('login') }}" method="post">
                 @csrf
-                
-                <label class="small font-weight-bold text-secondary">الرقم المدرسي</label>
-                <div class="input-group mb-3" >
-                    <div class="input-group-append">
-                        <div class="input-group-text">
-                            <span class="fas fa-user"></span>
-                        </div>
-                    </div>
-                    <input type="text" name="school_id" value="{{ old('school_id') }}" 
-                           class="form-control form-control-appended @error('school_id') is-invalid @enderror" 
-                           placeholder="أدخل الرقم المدرسي" required autofocus>
+                <div class="form-group">
+                    <input type="text" name="school_id" class="form-control" placeholder="الرقم المدرسي" required>
                 </div>
-                @error('school_id')
-                    <p class="text-danger small text-right mt-n2"><strong>{{ $message }}</strong></p>
-                @enderror
-
-                <label class="small font-weight-bold text-secondary">كلمة المرور</label>
-                <div class="input-group mb-3" >
-                    <div class="input-group-append">
-                        <div class="input-group-text">
-                            <span class="fas fa-lock"></span>
-                        </div>
-                    </div>
-                    <input type="password" name="password" 
-                           class="form-control form-control-appended @error('password') is-invalid @enderror" 
-                           placeholder="كلمة المرور" required>
+                <div class="form-group">
+                    <input type="password" name="password" class="form-control" placeholder="كلمة المرور" required>
                 </div>
-                @error('password')
-                    <p class="text-danger small text-right mt-n2"><strong>{{ $message }}</strong></p>
-                @enderror
-
-                <div class="row mt-4">
-                    <div class="col-12">
-                        <button type="submit" class="btn btn-primary btn-block">
-                            <i class="fas fa-sign-in-alt ml-1"></i> دخول للنظام
-                        </button>
+                <div class="d-flex justify-content-between mb-3">
+                    <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" id="rem">
+                        <label class="custom-control-label small" for="rem">تذكرني</label>
                     </div>
+                    <a href="#" data-toggle="modal" data-target="#modal-forgot" class="small font-weight-bold">نسيت كلمة
+                        المرور؟</a>
                 </div>
+                <button type="submit" class="btn btn-primary btn-block">دخول للنظام</button>
             </form>
+        </div>
+        <div class="text-center mt-3 text-muted small">&copy; {{ date('Y') }} جميع الحقوق محفوظة</div>
+    </div>
 
-            <div class="text-center mt-3">
-                @if (Route::has('password.request'))
-                    <a href="{{ route('password.request') }}" class="small text-muted">نسيت كلمة المرور؟</a>
-                @endif
+    <!-- modal استعادة كلمة المرور -->
+    <div class="modal fade" id="modal-forgot" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-0">
+                    <h5 class="font-weight-bold">استعادة الحساب</h5>
+                </div>
+                <div class="modal-body">
+                    <!-- الخطوة 1: التحقق من الهوية -->
+                    <div id="step-1">
+                        <p class="text-muted small">يرجى إدخال البيانات للتحقق من هويتك:</p>
+                        <input type="text" id="u_school_id" class="form-control mb-2" placeholder="الرقم المدرسي">
+                        <input type="text" id="u_national_id" class="form-control mb-3" placeholder="رقم الهوية">
+                        <button type="button" id="btn-verify" class="btn btn-primary btn-block">التحقق من
+                            البيانات</button>
+                    </div>
+
+                    <!-- الخطوة 2: إعادة ضبط كلمة المرور -->
+                    <div id="step-2" style="display:none;">
+                        <div class="alert alert-info small" id="phone-hint-msg"></div>
+                        <input type="text" id="full_phone" class="form-control mb-2"
+                            placeholder="رقم الهاتف كاملاً (مثال: 05XXXXXXXX)">
+                        <input type="password" id="new_password" class="form-control mb-2"
+                            placeholder="كلمة المرور الجديدة">
+                        <input type="password" id="confirm_password" class="form-control mb-3"
+                            placeholder="تأكيد كلمة المرور">
+                        <button type="button" id="btn-reset" class="btn btn-success btn-block">حفظ كلمة المرور</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-    
-    <div class="login-footer">
-        &copy; {{ date('Y') }} نظام المدرسة الالكتروني <br>
-    </div>
-</div>
 
-<script src="{{ asset('cms/plugins/jquery/jquery.min.js') }}"></script>
-<script src="{{ asset('cms/plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
-<script src="{{ asset('cms/dist/js/adminlte.min.js') }}"></script>
+    <!-- jQuery و Bootstrap -->
+    <script src="{{ asset('cms/plugins/jquery/jquery.min.js') }}"></script>
+    <script src="{{ asset('cms/plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ asset('js/sweetalert2.min.js') }}"></script>
+
+    <script>
+        // إعداد الـ CSRF لكل AJAX
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
+        // دالة موحدة لإظهار Toast في أعلى يمين الشاشة
+        function notify(message, isSuccess = true) {
+            Swal.close();
+            Swal.fire({
+                toast: true,
+                position: 'top-end',
+                icon: isSuccess ? 'success' : 'error',
+                title: message,
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                background: isSuccess ? '#28a745' : '#dc3545',
+                color: '#fff'
+            });
+        }
+
+        // --- التحقق من الهوية (الخطوة الأولى) ---
+        $('#btn-verify').click(function () {
+            $.post("{{ url('password/verify-identity') }}", {
+                school_id: $('#u_school_id').val(),
+                national_id: $('#u_national_id').val()
+            }).done(function (res) {
+                // لا يوجد تنبيه هنا، ننتقل مباشرة للخطوة الثانية
+                $('#phone-hint-msg').text('رقم الهاتف المسجل يبدأ بـ ' + res.phone_hint);
+                $('#step-1').fadeOut(200, function () { $('#step-2').fadeIn(); });
+            }).fail(function (xhr) {
+                // الخطأ فقط يظهر تنبيه
+                notify(xhr.responseJSON?.message || 'بيانات غير صحيحة', false);
+            });
+        });
+
+        // --- إعادة ضبط كلمة المرور (الخطوة الثانية) ---
+        $('#btn-reset').click(function () {
+            // التحقق من مطابقة الباسورد
+            if ($('#new_password').val() !== $('#confirm_password').val()) {
+                notify('كلمة المرور وتأكيدها غير متطابقين!', false);
+                return;
+            }
+
+            $.post("{{ route('password.reset') }}", {
+                school_id: $('#u_school_id').val(),
+                full_phone: $('#full_phone').val(),
+                password: $('#new_password').val(),
+                password_confirmation: $('#confirm_password').val()
+            }).done(function (res) {
+                // نجاح: يظهر تنبيه واحد فقط
+                notify('تم تسجيل الدخول بنجاح');
+                setTimeout(() => { window.location.href = res.redirect; }, 2000);
+            }).fail(function (xhr) {
+                // خطأ: يظهر تنبيه واحد فقط
+                notify(xhr.responseJSON?.message || 'حدث خطأ في النظام', false);
+            });
+        });
+
+    </script>
 
 </body>
+
 </html>

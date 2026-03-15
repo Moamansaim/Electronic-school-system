@@ -76,5 +76,9 @@ class Subject extends Model
     {
         return $this->hasMany(Exam::class);
     }
-    
+
+    public function files()
+    {
+        return $this->hasMany(SummaryFile::class, 'subject_id');
+    }
 }

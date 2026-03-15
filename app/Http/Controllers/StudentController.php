@@ -23,7 +23,7 @@ class StudentController extends Controller
      */
     public function index(Request $request): View
     {
-        $students = Student::with(['phoneNumbers', 'gradeLevel:id,name', 'classroom:id,name'])->select(
+        $students = Student::with(['phones', 'gradeLevel:id,name', 'classroom:id,name'])->select(
             'id',
             'first_name',
             'father_name',

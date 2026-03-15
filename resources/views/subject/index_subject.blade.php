@@ -2,7 +2,7 @@
 @section('title', 'قائمة المواد الدراسية')
 
 @section('content')
-    <div class="container-fluid p-4">
+    <div class="container-fluid ">
         <x-grade-level-success-component />
 
         <div class="card border-0 shadow-sm" style="border-radius: 15px;">
@@ -37,7 +37,7 @@
 
             <div class="card-body p-0">
                 <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0">
+                    <table class="table  table-hover align-middle mb-0">
                         <thead class="bg-light">
                             <tr>
                                 <th class="border-0 text-center text-muted py-3" style="width: 50px;">#</th>
@@ -70,23 +70,45 @@
                                             <i class="far fa-clock mr-1"></i> {{ $subject->created_at }}
                                         </small>
                                     </td>
-                                    <td class="text-center">
-                                        <div class="d-flex justify-content-center gap-2">
-                                            <a href="{{ route('subjects.edit', $subject->id) }}"
-                                                class="btn btn-sm btn-info mr-2 d-flex align-items-center" title="تعديل">
-                                             <i class="fas fa-pen mr-1"></i>
-                                                <span>تعديل</span>
-                                            </a>
+                                    <td class="text-center" style="overflow: visible;">
+    <div class="dropdown">
+        <button class="btn btn-light btn-sm rounded-pill shadow-sm px-3" type="button"
+            id="dropdownMenuButton{{ $subject->id }}" data-toggle="dropdown"
+            data-boundary="window" aria-haspopup="true" aria-expanded="false">
+            <i class="fas fa-ellipsis-v text-muted"></i>
+        </button>
 
-                                            <button class="btn btn-sm btn-danger mr-2 d-flex align-items-center" data-toggle="modal"
-                                                data-target="#deleteModal{{ $subject->id }}" title="حذف">
-                                                  <i class="fas fa-trash-alt mr-1"></i>
-                                                <span>حذف</span>
-                                            </button>
-                                        </div>
+        <div class="dropdown-menu dropdown-menu-right border-0 shadow-lg mt-2"
+            aria-labelledby="dropdownMenuButton{{ $subject->id }}"
+            style="border-radius: 12px; min-width: 180px; z-index: 1050; text-align: right;">
 
-                                        <div class="modal fade" id="deleteModal{{ $subject->id }}" tabindex="-1"
-                                            role="dialog">
+            <h6 class="dropdown-header text-xs text-uppercase text-muted font-weight-bold">
+                خيارات المادة
+            </h6>
+
+            <a class="dropdown-item" href="{{ route('subjects.show', $subject->id) }}">
+                <i class="fas fa-cloud-upload-alt text-dark mr-2"></i> رفع ملخصات
+            </a>
+
+            <a class="dropdown-item" href="{{ route('files.view', $subject->id) }}">
+                <i class="fas fa-folder-open mr-2" style="color: #6f42c1;"></i> عرض المرفقات
+            </a>
+
+            <a class="dropdown-item" href="{{ route('subjects.edit', $subject->id) }}">
+                <i class="fas fa-pen text-info mr-2"></i> تعديل المادة
+            </a>
+
+            <div class="dropdown-divider"></div>
+
+            <button type="button" class="dropdown-item text-danger" data-toggle="modal"
+                data-target="#deleteModal{{ $subject->id }}">
+                <i class="fas fa-trash-alt mr-2"></i> حذف المادة
+            </button>
+        </div>
+    </div>
+</td>
+
+                                        <div class="modal fade" id="deleteModal{{ $subject->id }}" tabindex="-1" role="dialog">
                                             <div class="modal-dialog modal-dialog-centered" role="document">
                                                 <div class="modal-content border-0 shadow" style="border-radius: 15px;">
                                                     <div class="modal-body p-5 text-center">
@@ -96,10 +118,10 @@
                                                         <h3 class="font-weight-bold">تأكيد الحذف</h3>
                                                         <p class="text-muted">هل أنت متأكد من حذف
                                                             <strong>({{ $subject->name }})</strong>؟<br>هذا الإجراء لا يمكن
-                                                            التراجع عنه.</p>
+                                                            التراجع عنه.
+                                                        </p>
                                                         <div class="d-flex justify-content-center mt-4">
-                                                            <button type="button"
-                                                                class="btn btn-light px-4 mr-2 rounded-pill"
+                                                            <button type="button" class="btn btn-light px-4 mr-2 rounded-pill"
                                                                 data-dismiss="modal">إلغاء</button>
                                                             <form action="{{ route('subjects.destroy', $subject->id) }}"
                                                                 method="POST">
@@ -139,6 +161,7 @@
 
     <style>
         <style>
+
         /* محاذاة عامة للجدول */
         .table th,
         .table td {

@@ -124,9 +124,9 @@
                                     </td>
 
                                     <td>
-                                        @if ($student->phoneNumbers && $student->phoneNumbers->count() > 0)
+                                        @if ($student->phones && $student->phones->count() > 0)
                                             <div class="d-flex flex-wrap gap-1">
-                                                @foreach ($student->phoneNumbers as $phone)
+                                                @foreach ($student->phones as $phone)
                                                     <span class="badge badge-pill badge-light border text-dark mb-1">
                                                         <i class="fas fa-phone-alt fa-xs text-success mr-1"></i>
                                                         {{ $phone->phone_number }}

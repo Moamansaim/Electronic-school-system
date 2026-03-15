@@ -42,7 +42,7 @@ class Student extends Model
         });
     }
 
-    public function phoneNumbers(): HasMany
+    public function phones(): HasMany
     {
         return $this->HasMany(StudentPhoneNumber::class);
     }

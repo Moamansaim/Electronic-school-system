@@ -22,7 +22,7 @@ class TeacherController extends Controller
      */
     public function index(Request $request)
     {
-        $teachers = Teacher::with('phoneNumbers:id,teacher_id,phone_number')->select(
+        $teachers = Teacher::with('phones:id,teacher_id,phone_number')->select(
             'id',
             'first_name',
             'father_name',

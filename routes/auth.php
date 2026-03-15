@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\ConfirmablePasswordController;
+use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\PasswordController;
 use Illuminate\Support\Facades\Route;
 
@@ -24,4 +25,16 @@ Route::middleware('auth')->group(function () {
 
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
         ->name('logout');
+});
+
+
+Route::middleware('guest')->group(function () {
+
+    // 1. مسار التحقق من الهوية (الخطوة الأولى في المودال)
+    Route::post('password/verify-identity', [ForgotPasswordController::class, 'verifyIdentity'])
+        ->name('password.verify-identity');
+
+    // 2. مسار إتمام تغيير كلمة المرور والدخول التلقائي (الخطوة الثانية في المودال)
+    Route::post('password/reset', [ForgotPasswordController::class, 'resetPassword'])
+        ->name('password.reset');
 });

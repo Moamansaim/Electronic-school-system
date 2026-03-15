@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="{{ asset('cms/plugins/fontawesome-free/css/all.min.css') }}">
     <link rel="stylesheet" href="{{ asset('cms/dist/css/adminlte.min.css') }}">
     <link rel="stylesheet" href="{{ asset('cms/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css') }}">
-
+    <link rel="stylesheet" href="{{ asset('css/sweetalert2.min.css') }}">
     <style>
         @font-face {
             font-family: 'Cairo';
@@ -25,15 +25,12 @@
             font-style: normal;
         }
 
-
         body {
             font-family: 'Cairo', sans-serif;
         }
 
-        /* تنسيق القائمة الجانبية */
         .main-sidebar {
             background-color: #2c3e50 !important;
-            /* لون كحلي عصري بدلاً من الأسود */
             box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1) !important;
         }
 
@@ -52,7 +49,6 @@
 
         .nav-pills .nav-link.active {
             background-color: #3498db !important;
-            /* لون أزرق مريح */
             box-shadow: 0 4px 6px rgba(52, 152, 219, 0.3);
         }
 
@@ -60,16 +56,13 @@
             background-color: rgba(255, 255, 255, 0.1);
         }
 
-        /* تنسيق شريط التنقل العلوي */
         .main-header {
             border-bottom: none !important;
             box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
         }
 
-        /* تحسينات عامة للمحتوى */
         .content-wrapper {
             background-color: #f8fafc;
-            /* خلفية افتح قليلاً */
         }
 
         .breadcrumb {
@@ -78,14 +71,12 @@
             margin-bottom: 1rem;
         }
 
-        /* تأثيرات التحميل (Loader) */
         .loader-wrapper {
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
             display: none;
-            /* يظهر عند الحاجة عبر JS */
         }
     </style>
 </head>
@@ -104,13 +95,11 @@
             </ul>
 
             <ul class="navbar-nav ml-auto">
-                <li class="nav-item dropdown px-3">
-                    <form method="post" action="{{ route('logout') }}">
-                        <button class="btn btn-danger btn-sm rounded-pill px-3" href="{{ route('logout') }}">
-                            @csrf
-                            <i class="fas fa-sign-out-alt ml-1"></i> تسجيل الخروج
-                        </button>
-                    </form>
+                <li class="nav-item px-3">
+                    <button type="button" class="btn btn-danger btn-sm rounded-pill px-3" data-toggle="modal"
+                        data-target="#logoutModal">
+                        <i class="fas fa-sign-out-alt ml-1"></i> تسجيل الخروج
+                    </button>
                 </li>
             </ul>
         </nav>
@@ -129,103 +118,72 @@
                         </div>
                     </div>
                     @auth
-                         <div class="info px-3 ">
-                        @php
-                            $teacher = Auth::user()->teacher;
-                        @endphp
-                        <a href="#" class="d-block font-weight-bold ">{{ $teacher ? $teacher->full_name : ' مستخدم نظام ' }}</a>
-                    </div>
+                        <div class="info px-3">
+                            @php $teacher = Auth::user()->teacher; @endphp
+                            <a href="#"
+                                class="d-block font-weight-bold text-white">{{ $teacher ? $teacher->full_name : ' مستخدم نظام ' }}</a>
+                        </div>
                     @endauth
-                   
                 </div>
 
                 <nav class="mt-2">
                     <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu">
-
                         <li class="nav-item">
-                            <a href="#" class="nav-link active ">
-                                <i class="nav-icon fas fa-th-large "></i>
+                            <a href="#" class="nav-link active"><i class="nav-icon fas fa-th-large"></i>
                                 <p>الرئيسية</p>
                             </a>
                         </li>
-
                         <li class="nav-header mt-3 text-uppercase small" style="color: #95a5a6;">إدارة المحتوى</li>
 
                         <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <i class="nav-icon fas fa-chalkboard"></i>
-                                <p>
-                                    إدارة الصفوف الدراسية
-                                    <i class="fas fa-angle-left right"></i>
-                                </p>
+                            <a href="#" class="nav-link"><i class="nav-icon fas fa-chalkboard"></i>
+                                <p>إدارة الصفوف الدراسية<i class="fas fa-angle-left right"></i></p>
                             </a>
                             <ul class="nav nav-treeview">
-                                <li class="nav-item">
-                                    <a href="{{ route('grade_levels.index') }}" class="nav-link">
-                                        <i class="fas fa-layer-group nav-icon"></i>
+                                <li class="nav-item"><a href="{{ route('grade_levels.index') }}" class="nav-link"><i
+                                            class="fas fa-layer-group nav-icon"></i>
                                         <p>بيانات المراحل والصفوف</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="{{ route('subjects.index') }}" class="nav-link">
-                                        <i class="fas fa-book nav-icon"></i>
+                                    </a></li>
+                                <li class="nav-item"><a href="{{ route('subjects.index') }}" class="nav-link"><i
+                                            class="fas fa-book nav-icon"></i>
                                         <p>إدارة المواد الدراسية</p>
-                                    </a>
-                                </li>
+                                    </a></li>
                             </ul>
                         </li>
 
                         <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <i class="nav-icon fas fa-chalkboard-teacher"></i>
-                                <p>
-                                    إدارة المعلمين
-                                    <i class="fas fa-angle-left right"></i>
-                                </p>
+                            <a href="#" class="nav-link"><i class="nav-icon fas fa-chalkboard-teacher"></i>
+                                <p>إدارة المعلمين<i class="fas fa-angle-left right"></i></p>
                             </a>
                             <ul class="nav nav-treeview">
-                                <li class="nav-item">
-                                    <a href="{{ route('teachers.index') }}" class="nav-link">
-                                        <i class="fas fa-users-cog nav-icon"></i>
+                                <li class="nav-item"><a href="{{ route('teachers.index') }}" class="nav-link"><i
+                                            class="fas fa-users-cog nav-icon"></i>
                                         <p>بيانات المعلمين</p>
-                                    </a>
-                                </li>
+                                    </a></li>
                             </ul>
                         </li>
 
                         <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <i class="nav-icon fas fa-user-graduate"></i>
-                                <p>
-                                    إدارة الطلاب
-                                    <i class="fas fa-angle-left right"></i>
-                                </p>
+                            <a href="#" class="nav-link"><i class="nav-icon fas fa-user-graduate"></i>
+                                <p>إدارة الطلاب<i class="fas fa-angle-left right"></i></p>
                             </a>
                             <ul class="nav nav-treeview">
-                                <li class="nav-item">
-                                    <a href="{{ route('students.index') }}" class="nav-link">
-                                        <i class="fas fa-user-edit nav-icon"></i>
+                                <li class="nav-item"><a href="{{ route('students.index') }}" class="nav-link"><i
+                                            class="fas fa-user-edit nav-icon"></i>
                                         <p>بيانات الطلاب</p>
-                                    </a>
-                                </li>
+                                    </a></li>
                             </ul>
                         </li>
 
                         <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <i class="nav-icon fas fa-file-alt"></i>
-                                <p>
-                                    إدارة الاختبارات الطلابية
-                                    <i class="fas fa-angle-left right"></i>
-                                </p>
+                            <a href="#" class="nav-link"><i class="nav-icon fas fa-file-alt"></i>
+                                <p>إدارة الاختبارات الطلابية<i class="fas fa-angle-left right"></i></p>
                             </a>
                             <ul class="nav nav-treeview">
-                                <li class="nav-item">
-                                    <a href="{{ route('exams.index') }}" class="nav-link">
-                                        <i class="fas fa-tasks nav-icon"></i>
+                                <li class="nav-item"><a href="{{ route('exams.index') }}" class="nav-link"><i
+                                            class="fas fa-tasks nav-icon"></i>
                                         <p>بيانات الاختبارات</p>
-                                    </a>
-                                </li>
+                                    </a></li>
                             </ul>
                         </li>
                     </ul>
@@ -252,14 +210,35 @@
         </div>
 
         <footer class="main-footer bg-white border-0 text-center py-3">
-            <small class="text-muted">حقوق النشر &copy; 2026 <strong>نظام المدرسة الإلكتروني</strong>. جميع الحقوق
-                محفوظة.</small>
+            <small class="text-muted">حقوق النشر &copy; {{ date('Y') }} <strong>نظام المدرسة الإلكتروني</strong>. جميع
+                الحقوق محفوظة.</small>
         </footer>
     </div>
+
+    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title font-weight-bold">تأكيد تسجيل الخروج</h5>
+                </div>
+                <div class="modal-body">هل أنت متأكد أنك تريد مغادرة النظام؟</div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">إلغاء</button>
+                    <button type="button" class="btn btn-danger"
+                        onclick="document.getElementById('logout-form').submit();">نعم، تسجيل الخروج</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+        @csrf
+    </form>
 
     <script src="{{ asset('cms/plugins/jquery/jquery.min.js') }}"></script>
     <script src="{{ asset('cms/plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('cms/dist/js/adminlte.min.js') }}"></script>
+    <script src="{{ asset('js/sweetalert2.min.js') }}"></script>
     @stack('script')
 </body>
 

@@ -52,6 +52,17 @@ class SubjectController extends Controller
         }
     }
 
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(Subject $subject): View
+    {
+
+        return view('subject.summary', compact('subject'));
+    }
+
+
     /**
      * عرض صفحة تعديل مادة
      */
@@ -91,9 +102,6 @@ class SubjectController extends Controller
         }
     }
 
-    /**
-     * دالة مساعدة لجلب المراحل الدراسية
-     */
     private function getGradeLevels()
     {
         return GradeLevel::select('id', 'name')->orderBy('name')->get();

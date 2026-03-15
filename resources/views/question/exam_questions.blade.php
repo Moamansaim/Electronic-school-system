@@ -38,14 +38,15 @@
                                                 <div class="row">
                                                     <div class="col-md-4"><strong>النوع:</strong> <span class="badge badge-info">
                                                             {{ match ($question->question_type) {
-                            'multiple_choice' => 'خيار من متعدد',
-                            'essay' => 'مقالي',
-                            default => $question->question_type,
-                        } }}
+                                                            'multiple_choice' => 'خيار من متعدد',
+                                                            'essay_question' => 'مقالي',
+                                                            default => $question->question_type,
+                                                        } }}
                                                         </span></div>
                                                     <div class="col-md-4"><strong>الدرجة:</strong> {{ $question->mark }} درجات</div>
                                                     <div class="col-md-4 text-muted small">تاريخ الإضافة:
-                                                        {{ $question->created_at->format('Y-m-d') }}</div>
+                                                        {{ $question->created_at->format('Y-m-d') }}
+                                                    </div>
                                                 </div>
 
                                                 @if($question->options && $question->options->count() > 0)
