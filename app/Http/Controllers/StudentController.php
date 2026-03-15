@@ -19,7 +19,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 class StudentController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * عرض قائمة الطلاب.
      */
     public function index(Request $request): View
     {
@@ -45,7 +45,7 @@ class StudentController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * عرض نموذج إضافة طالب جديد.
      */
     public function create(): View
     {
@@ -55,13 +55,10 @@ class StudentController extends Controller
     }
 
     /**
-     * Fetch classrooms and subjects for a specific grade level.
+     * جلب الفصول والمواد بناءً على المرحلة الدراسية.
      *
      * @param  int  $grade_level_id
      * @return \Illuminate\Http\JsonResponse
-     *
-     * Loads the grade level by ID along with related classrooms and subjects.
-     * Returns the data as JSON for use in dynamic forms or AJAX requests.
      */
     public function getDataByGrade($grade_level_id): JsonResponse
     {
@@ -76,14 +73,14 @@ class StudentController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * حفظ طالب جديد في قاعدة البيانات.
      */
     public function store(StudentRequest $studentRequest): RedirectResponse
     {
         try {
             DB::beginTransaction();
 
-            $generated_school_id = strtolower(Str::random(4).''.$studentRequest->national_id);
+            $generated_school_id = strtolower(Str::random(4) . '' . $studentRequest->national_id);
             $generated_password = Str::random(12);
 
             $user = User::create([
@@ -129,7 +126,7 @@ class StudentController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * عرض تفاصيل طالب محدد.
      */
     public function show(Student $student): View
     {
@@ -161,7 +158,7 @@ class StudentController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * عرض نموذج تعديل بيانات طالب.
      */
     public function edit(Student $student): View
     {
@@ -171,7 +168,7 @@ class StudentController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * تحديث بيانات الطالب في قاعدة البيانات.
      */
     public function update(StudentRequest $studentRequest, Student $student): RedirectResponse
     {
@@ -197,7 +194,7 @@ class StudentController extends Controller
 
             DB::commit();
 
-            $full_name = $student->first_name.$student->father_name.' '.' '.$student->family_name;
+            $full_name = $student->first_name . $student->father_name . ' ' . ' ' . $student->family_name;
 
             return redirect()->route('students.index')
                 ->with('success', "تم تحديث بيانات الطالب ({$full_name}) بنجاح");
@@ -210,14 +207,14 @@ class StudentController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * حذف طالب من قاعدة البيانات.
      */
     public function destroy(Student $student): RedirectResponse
     {
         try {
 
             $student->delete();
-            $full_name = $student->first_name.' '.$student->family_name;
+            $full_name = $student->first_name . ' ' . $student->family_name;
 
             return redirect()->back()->with('success', "تم حذف الطالب ({$full_name}) بنجاح");
         } catch (Exception $e) {
@@ -226,6 +223,9 @@ class StudentController extends Controller
         }
     }
 
+    /**
+     * جلب جميع المراحل الدراسية مرتبة بالاسم.
+     */
     private function getGradeLevels()
     {
         return GradeLevel::select('id', 'name')->orderBy('name')->get();

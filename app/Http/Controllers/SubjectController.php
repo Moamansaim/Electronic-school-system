@@ -36,6 +36,9 @@ class SubjectController extends Controller
         return view('subject.create_subject', compact('grade_levels'));
     }
 
+    /**
+     * حفظ مادة جديدة في قاعدة البيانات.
+     */
     public function store(SubjectRequest $request): RedirectResponse
     {
         try {
@@ -54,7 +57,7 @@ class SubjectController extends Controller
 
 
     /**
-     * Display the specified resource.
+     * عرض تفاصيل مادة محددة.
      */
     public function show(Subject $subject): View
     {
@@ -73,6 +76,9 @@ class SubjectController extends Controller
         return view('subject.edit_subject', compact('subject', 'grade_levels'));
     }
 
+    /**
+     * تحديث بيانات المادة الدراسية في قاعدة البيانات.
+     */
     public function update(SubjectRequest $request, Subject $subject): RedirectResponse
     {
         try {
@@ -89,6 +95,9 @@ class SubjectController extends Controller
         }
     }
 
+    /**
+     * حذف مادة من قاعدة البيانات.
+     */
     public function destroy(Subject $subject): RedirectResponse
     {
         try {
@@ -102,6 +111,9 @@ class SubjectController extends Controller
         }
     }
 
+    /**
+     * جلب جميع المراحل الدراسية مرتبة بالاسم.
+     */
     private function getGradeLevels()
     {
         return GradeLevel::select('id', 'name')->orderBy('name')->get();

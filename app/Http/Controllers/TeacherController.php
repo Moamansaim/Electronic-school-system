@@ -18,7 +18,7 @@ use Illuminate\Support\Str;
 class TeacherController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * عرض قائمة المعلمين.
      */
     public function index(Request $request)
     {
@@ -42,13 +42,10 @@ class TeacherController extends Controller
     }
 
     /**
-     * Display the assignment page for a specific teacher.
+     * عرض صفحة تعيين المواد والصفوف للمعلم.
      *
      * @param  int  $teacher_id
      * @return \Illuminate\View\View
-     *
-     * Loads the teacher by ID and fetches all grade levels.
-     * Passes the teacher and grade levels to the view for assignment.
      */
     public function teacherAssignment($teacher_id)
     {
@@ -62,13 +59,10 @@ class TeacherController extends Controller
     }
 
     /**
-     * Fetch classrooms and subjects for a specific grade level.
+     * جلب الفصول والمواد بناءً على المرحلة الدراسية.
      *
      * @param  int  $grade_level_id
      * @return \Illuminate\Http\JsonResponse
-     *
-     * Loads the grade level by ID along with related classrooms and subjects.
-     * Returns the data as JSON for use in dynamic forms or AJAX requests.
      */
     public function getDataByGrade($grade_level_id)
     {
@@ -83,13 +77,9 @@ class TeacherController extends Controller
     }
 
     /**
-     * Store a new teacher assignment.
+     * حفظ تعيين مادة وصف دراسي للمعلم.
      *
      * @return \Illuminate\Http\RedirectResponse
-     *
-     * Validates the request data and creates a new TeacherAssignment record.
-     * If successful, redirects to teachers index with a success message.
-     * If an exception occurs, rolls back the transaction and returns back with input and error message.
      */
     public function storeAssignment(TeacherAssignmentRequest $teacherAssignmentRequest)
     {
@@ -110,6 +100,9 @@ class TeacherController extends Controller
         }
     }
 
+    /**
+     * عرض بيانات تعيينات المعلم.
+     */
     public function dataTeacherAssignment($teacher_id)
     {
 
@@ -123,8 +116,7 @@ class TeacherController extends Controller
     }
 
     /**
-     * Show the form for
-     *  creating a new resource.
+     * عرض نموذج إضافة معلم جديد.
      */
     public function create()
     {
@@ -132,7 +124,7 @@ class TeacherController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * حفظ معلم جديد في قاعدة البيانات.
      */
     public function store(TeacherRequest $teacherRequest): RedirectResponse
     {
@@ -181,7 +173,7 @@ class TeacherController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * عرض تفاصيل معلم محدد.
      */
     public function show(Teacher $teacher)
     {
@@ -189,7 +181,7 @@ class TeacherController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * عرض نموذج تعديل بيانات معلم.
      */
     public function edit(Teacher $teacher)
     {
@@ -197,7 +189,7 @@ class TeacherController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * تحديث بيانات المعلم في قاعدة البيانات.
      */
     public function update(TeacherRequest $teacherRequest, Teacher $teacher): RedirectResponse
     {
@@ -234,7 +226,7 @@ class TeacherController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * حذف معلم من قاعدة البيانات.
      */
     public function destroy(Teacher $teacher)
     {
@@ -250,6 +242,9 @@ class TeacherController extends Controller
         }
     }
 
+    /**
+     * حذف تعيين مادة أو صف دراسي للمعلم.
+     */
     public function destroyTeacherAssignment($teacher_assignment_id)
     {
         try {

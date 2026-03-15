@@ -2,17 +2,20 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+
 class Exam extends Model
+
 {
-   use SoftDeletes;
-   const FINAL = 'نهائي';
-   const MIDTREM = 'نصفي';
-    protected $fillable = [   
+    use HasFactory, SoftDeletes;
+    const FINAL = 'نهائي';
+    const MIDTREM = 'نصفي';
+    protected $fillable = [
         'subject_id',
         'teacher_id',
         'description',
@@ -32,7 +35,7 @@ class Exam extends Model
         return $this->belongsTo(Teacher::class);
     }
 
-     public function questions(): HasMany
+    public function questions(): HasMany
     {
         return $this->hasMany(Question::class);
     }

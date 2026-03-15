@@ -3,6 +3,7 @@
 
 @section('content')
     <div class="container-fluid">
+        <x-grade-level-success-component />
         <div class="card border-0 shadow-sm" style="border-radius: 15px;">
             <div class="card-header bg-white border-0 py-4">
                 <h4 class="mb-0 font-weight-bold text-dark">
@@ -66,7 +67,7 @@
                                                                 data-dismiss="modal">
                                                                 إلغاء
                                                             </button>
-                                                            <form action=""
+                                                            <form action="{{ route('files.destroy', $file->id) }}"
                                                                 method="POST">
                                                                 @csrf @method('DELETE')
                                                                 <button type="submit" class="btn btn-danger px-4 rounded-pill">

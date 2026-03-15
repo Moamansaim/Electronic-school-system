@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Question;
-use App\Models\Option; // تأكد من استيراد الموديل
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
 use App\Http\Requests\QuestionRequest;
@@ -11,23 +10,28 @@ use Illuminate\Support\Facades\DB;
 
 class QuestionController extends Controller
 {
+    // عرض قائمة الأسئلة مع تحميل الخيارات المرتبطة بها
     public function index(): View
     {
         $questions = Question::with('options')->paginate();
         return view('question.index_question', compact('questions'));
     }
 
+    // عرض نموذج إنشاء سؤال جديد
     public function create(): View
     {
         return view('question.create_question');
     }
 
+    // حفظ السؤال الجديد وخياراته في قاعدة البيانات
     public function store(QuestionRequest $questionRequest): RedirectResponse
     {
         try {
+            // استخدام المعاملات لضمان سلامة البيانات
             DB::transaction(function () use ($questionRequest) {
                 $question = Question::create($questionRequest->validated());
 
+                // التحقق من نوع السؤال لإضافة الخيارات إذا كان اختيار من متعدد
                 if ($questionRequest->question_type === 'multiple_choice') {
                     foreach ($questionRequest->options as $index => $text) {
                         $question->options()->create([
@@ -45,12 +49,14 @@ class QuestionController extends Controller
         }
     }
 
+    // عرض نموذج تعديل سؤال معين
     public function edit(Question $question): View
     {
         $question->load('options');
         return view('question.edit_question', compact('question'));
     }
 
+    // تحديث بيانات السؤال والخيارات المرتبطة به
     public function update(QuestionRequest $request, Question $question)
     {
         DB::transaction(function () use ($request, $question) {
@@ -81,6 +87,7 @@ class QuestionController extends Controller
             ->with('success', 'تم تحديث السؤال والخيارات بنجاح');
     }
 
+    // حذف السؤال وجميع خياراته من قاعدة البيانات
     public function destroy(Question $question): RedirectResponse
     {
         $question->options()->delete();

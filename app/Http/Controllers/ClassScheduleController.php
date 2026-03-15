@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Enums\ClassSchedule;
 use App\Enums\WeekDay;
 use App\Http\Requests\ClassScheduleRequest;
-use App\Models\Classroom;
 use App\Models\ClassSchedule as ModelsClassSchedule;
 use App\Models\Teacher;
 use Exception;
@@ -15,16 +14,15 @@ use Illuminate\View\View;
 class ClassScheduleController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * عرض قائمة الحصص الدراسية.
      */
     public function index() {}
 
     /**
-     * Show the form for creating a new resource.
+     * عرض نموذج إنشاء حصة دراسية جديدة لمعلم معين.
      */
     public function create($teacher_id): View
     {
-
         $teacher = Teacher::with('teacherAssignments.classroom')->findOrFail($teacher_id);
         $week_days = $this->weekDays();
         $class_schedules = $this->classSchedule();
@@ -33,25 +31,27 @@ class ClassScheduleController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * حفظ الحصة الدراسية الجديدة في قاعدة البيانات.
      */
     public function store(ClassScheduleRequest $classScheduleRequest): RedirectResponse
     {
-
         try {
             ModelsClassSchedule::create($classScheduleRequest->validated());
 
             return redirect()
                 ->back()
-                ->with('success', 'تمت إضافة  الحصة الدراسية بنجاح.');
+                ->with('success', 'تمت إضافة الحصة الدراسية بنجاح.');
         } catch (Exception $e) {
             return redirect()
                 ->back()
                 ->withInput()
-                ->with('error', 'حدث خطأ أثناء حفظ  الحصة الدراسية يرجى المحاولة لاحقًا.');
+                ->with('error', 'حدث خطأ أثناء حفظ الحصة الدراسية يرجى المحاولة لاحقًا.');
         }
     }
 
+    /**
+     * عرض تفاصيل وجدول حصص معلم معين.
+     */
     public function show($teacher_id)
     {
         if ($teacher_id) {
@@ -66,13 +66,12 @@ class ClassScheduleController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * عرض نموذج تعديل حصة دراسية معينة.
      */
     public function edit($class_schedule, $teacher_id): View
     {
         $teacher = Teacher::with('teacherAssignments.classroom')->findOrFail($teacher_id);
         $class_schedule = ModelsClassSchedule::findOrFail($class_schedule);
-        // $classrooms = Classroom::select('id', 'name')->get();
         $week_days = $this->weekDays();
         $class_schedules = $this->classSchedule();
 
@@ -85,7 +84,7 @@ class ClassScheduleController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * تحديث بيانات حصة دراسية محددة.
      */
     public function update(ClassScheduleRequest $classScheduleRequest, ModelsClassSchedule $classSchedule): RedirectResponse
     {
@@ -99,38 +98,42 @@ class ClassScheduleController extends Controller
                     'class_schedule' => $classSchedule->id,
                     'teacher_id' => $teacher_id,
                 ])
-                ->with('success', 'تمت تعديل  الحصة الدراسية بنجاح.');
+                ->with('success', 'تمت تعديل الحصة الدراسية بنجاح.');
         } catch (Exception $e) {
             return redirect()
                 ->back()
                 ->withInput()
-                ->with('error', 'حدث خطأ أثناء تعديل  الحصة الدراسية يرجى المحاولة لاحقًا.');
+                ->with('error', 'حدث خطأ أثناء تعديل الحصة الدراسية يرجى المحاولة لاحقًا.');
         }
     }
 
     /**
-     * Remove the specified resource from storage.
+     * حذف حصة دراسية من النظام.
      */
     public function destroy(ModelsClassSchedule $classSchedule): RedirectResponse
     {
         try {
-
             $classSchedule->delete();
 
-            return redirect()->back()->with('success', '  تمت عملية الحذف بنجاح');
+            return redirect()->back()->with('success', 'تمت عملية الحذف بنجاح');
         } catch (Exception $e) {
-
             return redirect()
                 ->back()
                 ->with('error', 'حدث خطأ أثناء عملية حذف الحصة الدراسية يرجى المحاولة لاحقًا.');
         }
     }
 
+    /**
+     * جلب أيام الأسبوع من الـ Enum الخاص بها.
+     */
     public function weekDays(): array
     {
         return WeekDay::cases();
     }
 
+    /**
+     * جلب أوقات الحصص الدراسية من الـ Enum الخاص بها.
+     */
     public function classSchedule(): array
     {
         return ClassSchedule::cases();

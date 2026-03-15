@@ -6,38 +6,37 @@ use Exception;
 use App\Models\Exam;
 use App\Enums\ExamType;
 use Illuminate\View\View;
-use Illuminate\Http\Request;
 use App\Http\Requests\ExamRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\DB;
+
 
 class ExamController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * عرض قائمة الاختبارات مع بيانات المادة والمعلم المرتبط بها.
      */
     public function index(): View
     {
-        $exams =  Exam::with(['subject', 'teacher'])->paginate(10);
+        $exams = Exam::with(['subject', 'teacher'])->paginate(10);
 
         return view('exam.index_exam', compact('exams'));
     }
 
     /**
-     * Show the form for creating a new resource.
+     * عرض نموذج إنشاء اختبار جديد بناءً على المواد المسندة للمعلم الحالي.
      */
     public function create(): View
     {
+        // جلب المواد المسندة للمعلم الذي قام بتسجيل الدخول
         $teacher_subjects = Auth::user()->teacher->teacherAssignments()->with('subject')->get();
-
         $exam_types = ExamType::cases();
 
         return view('exam.create_exam', compact('teacher_subjects', 'exam_types'));
     }
 
     /**
-     * Store a newly created resource in storage.
+     * حفظ بيانات الاختبار الجديد في قاعدة البيانات.
      */
     public function store(ExamRequest $examRequest): RedirectResponse
     {
@@ -46,17 +45,17 @@ class ExamController extends Controller
 
             return redirect()
                 ->route('exams.index')
-                ->with('success', 'تم  إنشاء الإختبار   بنجاح');
+                ->with('success', 'تم إنشاء الإختبار بنجاح');
         } catch (Exception $e) {
             return redirect()
                 ->back()
                 ->withInput()
-                ->with('error', 'حدث خطأ أثناء إنشاء  الإختبار ، يرجى المحاولة لاحقًا.');
+                ->with('error', 'حدث خطأ أثناء إنشاء الإختبار، يرجى المحاولة لاحقًا.');
         }
     }
 
     /**
-     * Display the specified resource.
+     * عرض نموذج إضافة أسئلة لاختبار معين.
      */
     public function show(Exam $exam): View
     {
@@ -65,53 +64,54 @@ class ExamController extends Controller
         return view('question.create_question', compact('exam'));
     }
 
-
     /**
-     * Display the specified resource.
+     * عرض قائمة الأسئلة التابعة لاختبار معين.
      */
     public function exam_questions($id): View
     {
         $exam = Exam::findOrFail($id);
         $questions = $exam->questions()->paginate(10);
+        
         return view('question.exam_questions', compact('exam', 'questions'));
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * عرض نموذج تعديل بيانات اختبار معين.
      */
     public function edit(Exam $exam): View
     {
         $teacher_subjects = Auth::user()->teacher->teacherAssignments()->with('subject')->get();
-
         $exam_types = ExamType::cases();
 
         return view('exam.edit_exam', compact('teacher_subjects', 'exam_types', 'exam'));
     }
 
     /**
-     * Update the specified resource in storage.
+     * تحديث بيانات اختبار موجود في قاعدة البيانات.
      */
     public function update(ExamRequest $examRequest, Exam $exam): RedirectResponse
     {
         try {
-
+            // التحقق من نوع الاختبار؛ إذا كان نهائياً أو نصفي، يتم مسح قيمة الشهر
             if ($examRequest->exam_type === Exam::FINAL || $examRequest->exam_type === Exam::MIDTREM) {
                 $exam->month = '';
             }
+            
             $exam->update($examRequest->validated());
+            
             return redirect()
                 ->route('exams.index')
-                ->with('success', 'تم  تعديل الإختبار   بنجاح');
+                ->with('success', 'تم تعديل الإختبار بنجاح');
         } catch (Exception $e) {
             return redirect()
                 ->back()
                 ->withInput()
-                ->with('error', 'حدث خطأ أثناء تعديل  الإختبار ، يرجى المحاولة لاحقًا.');
+                ->with('error', 'حدث خطأ أثناء تعديل الإختبار، يرجى المحاولة لاحقًا.');
         }
     }
 
     /**
-     * Remove the specified resource from storage.
+     * حذف اختبار معين من النظام.
      */
     public function destroy(Exam $exam): RedirectResponse
     {
@@ -122,7 +122,7 @@ class ExamController extends Controller
         } catch (Exception $e) {
             return redirect()
                 ->back()
-                ->with('error', 'حدث خطأ أثناء عملية حذف  الإختبار، يرجى المحاولة لاحقًا.');
+                ->with('error', 'حدث خطأ أثناء عملية حذف الإختبار، يرجى المحاولة لاحقًا.');
         }
     }
 }

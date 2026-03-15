@@ -13,6 +13,9 @@ use Illuminate\View\View;
 
 class ClassroomController extends Controller
 {
+    /**
+     * عرض قائمة الفصول الدراسية مع تفعيل خاصية البحث والترقيم.
+     */
     public function index(Request $request): View
     {
         $classrooms = Classroom::with('gradeLevel', 'teacher:id,first_name,father_name,grandfather_name,family_name')
@@ -24,6 +27,9 @@ class ClassroomController extends Controller
         return view('classroom.index_classroom', compact('classrooms'));
     }
 
+    /**
+     * عرض نموذج إنشاء فصل دراسي جديد.
+     */
     public function create(): View
     {
         $grade_levels = $this->getGradeLevels();
@@ -32,12 +38,15 @@ class ClassroomController extends Controller
         return view('classroom.create_classroom', compact('grade_levels', 'teachers'));
     }
 
+    /**
+     * حفظ بيانات الفصل الدراسي الجديد في قاعدة البيانات.
+     */
     public function store(ClassroomRequest $request): RedirectResponse
     {
         try {
-
             $data = $request->validated();
 
+            // التأكد من ضبط قيمة teacher_id كـ null في حال عدم اختيار معلم
             if (empty($data['teacher_id'])) {
                 $data['teacher_id'] = null;
             }
@@ -55,6 +64,9 @@ class ClassroomController extends Controller
         }
     }
 
+    /**
+     * عرض نموذج تعديل بيانات فصل دراسي محدد.
+     */
     public function edit(Classroom $classroom): View
     {
         $grade_levels = $this->getGradeLevels();
@@ -63,10 +75,12 @@ class ClassroomController extends Controller
         return view('classroom.edit_classroom', compact('classroom', 'grade_levels', 'teachers'));
     }
 
+    /**
+     * تحديث بيانات فصل دراسي معين في قاعدة البيانات.
+     */
     public function update(ClassroomRequest $request, Classroom $classroom): RedirectResponse
     {
         try {
-
             $data = $request->validated();
 
             if (empty($data['teacher_id'])) {
@@ -85,14 +99,16 @@ class ClassroomController extends Controller
         }
     }
 
+    /**
+     * حذف فصل دراسي من النظام.
+     */
     public function destroy(Classroom $classroom): RedirectResponse
     {
         try {
             $classroom->delete();
 
-            return redirect()->back()->with('success', "تم حذف  ({$classroom->name}) بنجاح");
+            return redirect()->back()->with('success', "تم حذف ({$classroom->name}) بنجاح");
         } catch (Exception $e) {
-
             return redirect()
                 ->back()
                 ->with('error', 'حدث خطأ أثناء عملية حذف الصف الدراسي، يرجى المحاولة لاحقًا.');
@@ -100,13 +116,16 @@ class ClassroomController extends Controller
     }
 
     /**
-     * دالة مساعدة  لجلب المراحل الدراسية لتقليل التكرار
+     * دالة مساعدة لجلب قائمة المراحل الدراسية لتقليل التكرار.
      */
     private function getGradeLevels()
     {
         return GradeLevel::select('id', 'name')->orderBy('name')->get();
     }
 
+    /**
+     * دالة مساعدة لجلب قائمة المعلمين لتقليل التكرار.
+     */
     private function getTeachers()
     {
         return Teacher::select(
