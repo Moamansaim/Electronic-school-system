@@ -65,7 +65,7 @@
                                 </div>
                                 <select name="teacher_id"
                                     class="form-control border-left-0 @error('teacher_id') is-invalid @enderror">
-                                    <option value="" selected disabled>اختر مربي الفصل...</option>
+                                    <option value="" selected >اختر مربي الفصل...</option>
                                     @foreach ($teachers as $teacher)
                                         <option value="{{ $teacher->id }}"
                                             {{ old('teacher_id' , $teacher->id ) == $classroom->teacher_id ? 'selected' : '' }}>
@@ -83,7 +83,7 @@
 
                 <div class="card-footer bg-light py-3 d-flex justify-content-between align-items-center">
                     <a href="{{ route('classrooms.index') }}" class="text-muted">
-                        <i class="fas fa-arrow-right mr-1"></i> العودة للقائمة
+                        <i class="fas fa-arrow-right mr-1"></i> العودة للقائمة السابقة
                     </a>
                     <button type="submit" class="btn btn-success px-5 shadow-sm" style="border-radius: 8px;">
                         <i class="fas fa-sync-alt ml-2"></i> تحديث البيانات

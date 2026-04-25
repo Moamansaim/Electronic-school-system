@@ -2,9 +2,14 @@
 
 namespace Tests\Feature;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
+use App\Models\Classroom;
 use App\Models\ClassSchedule;
+use App\Models\GradeLevel;
+use App\Models\Teacher;
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Hash;
+use Tests\TestCase;
 
 class ClassScheduleControllerTest extends TestCase
 {
@@ -27,15 +32,38 @@ class ClassScheduleControllerTest extends TestCase
     /** @test */
     public function it_can_store_class_schedule()
     {
+        $user = User::create([
+            'school_id' => 'jhu123654789',
+            'password' => Hash::make(123654)
+        ]);
+        $teacher = Teacher::cretae([
+            'first_name' => 'محمد',
+            'father_name' => 'ffff',
+            'grandfather_name' => 'xxxxx',
+            'family_name' => 'sssss',
+            'date_of_birth' => '2013-10-05',
+            'national_id' => '123654789',
+            'city' => 'xxxx',
+            'district' => 'xxx',
+            'street' => 'xxxx',
+            'user_id' => $user->id
+        ]);
+        $grade_level = GradeLevel::create([
+            'name' => 'أولى اعدادي',
+        ]);
+        $classroom = Classroom::create([
+            'name' => 'الصف العاشر 10',
+            'grade_level_id' => $grade_level->id,
+            'teacher_id' => $teacher->id,
+        ]);
         $data = [
-            'classroom_id' => 1,
-            'teacher_id' => 1,
-            'subject_id' => 1,
+            'classroom_id' => $classroom->id,
+            'teacher_id' => $teacher->id,
             'day' => 'الأحد',
             'class_schedule' => 'الحصة الأولى'
         ];
         $response = $this->post(route('class-schedules.store'), $data);
-        $response->assertStatus(302);
+        $response->assertStatus(201);
         $this->assertDatabaseHas('class_schedules', ['day' => 'الأحد']);
     }
 
@@ -50,25 +78,82 @@ class ClassScheduleControllerTest extends TestCase
     /** @test */
     public function it_can_update_class_schedule()
     {
-        $classSchedule = ClassSchedule::factory()->create();
-        $data = [
-            'classroom_id' => $classSchedule->classroom_id,
-            'teacher_id' => $classSchedule->teacher_id,
-            'subject_id' => $classSchedule->subject_id,
-            'day' => 'الاثنين',
-            'class_schedule' => $classSchedule->class_schedule
-        ];
-        $response = $this->put(route('class-schedules.update', $classSchedule->id), $data);
-        $response->assertStatus(302);
-        $this->assertDatabaseHas('class_schedules', ['day' => 'الاثنين']);
+        $user = User::create([
+            'school_id' => 'jhu123654789',
+            'password' => Hash::make(123654)
+        ]);
+        $teacher = Teacher::cretae([
+            'first_name' => 'محمد',
+            'father_name' => 'ffff',
+            'grandfather_name' => 'xxxxx',
+            'family_name' => 'sssss',
+            'date_of_birth' => '2013-10-05',
+            'national_id' => '123654789',
+            'city' => 'xxxx',
+            'district' => 'xxx',
+            'street' => 'xxxx',
+            'user_id' => $user->id
+        ]);
+        $grade_level = GradeLevel::create([
+            'name' => 'أولى اعدادي',
+        ]);
+        $classroom = Classroom::create([
+            'name' => 'الصف العاشر 10',
+            'grade_level_id' => $grade_level->id,
+            'teacher_id' => $teacher->id,
+        ]);
+        $class_schedule = ClassSchedule::create([
+            'classroom_id' => $classroom->id,
+            'teacher_id' => $teacher->id,
+            'day' => 'السبت',
+            'class_schedule' => 'الحصة الأولى'
+        ]);
+
+        $response = $this->put(route('class-schedules.update', $class_schedule->id), [
+            'classroom_id' => $classroom->id,
+            'teacher_id' => $teacher->id,
+            'day' => 'الأحد',
+            'class_schedule' => 'الحصة الأولى'
+        ]);
+        $response->assertStatus(204);
+        $this->assertDatabaseHas('class_schedules', ['day' => 'الأحد']);
     }
 
     /** @test */
     public function it_can_delete_class_schedule()
     {
-        $classSchedule = ClassSchedule::factory()->create();
-        $response = $this->delete(route('class-schedules.destroy', $classSchedule->id));
-        $response->assertStatus(302);
-        $this->assertDatabaseMissing('class_schedules', ['id' => $classSchedule->id]);
+        $user = User::create([
+            'school_id' => 'jhu123654789',
+            'password' => Hash::make(123654)
+        ]);
+        $teacher = Teacher::cretae([
+            'first_name' => 'محمد',
+            'father_name' => 'ffff',
+            'grandfather_name' => 'xxxxx',
+            'family_name' => 'sssss',
+            'date_of_birth' => '2013-10-05',
+            'national_id' => '123654789',
+            'city' => 'xxxx',
+            'district' => 'xxx',
+            'street' => 'xxxx',
+            'user_id' => $user->id
+        ]);
+        $grade_level = GradeLevel::create([
+            'name' => 'أولى اعدادي',
+        ]);
+        $classroom = Classroom::create([
+            'name' => 'الصف العاشر 10',
+            'grade_level_id' => $grade_level->id,
+            'teacher_id' => $teacher->id,
+        ]);
+        $class_schedule = ClassSchedule::create([
+            'classroom_id' => $classroom->id,
+            'teacher_id' => $teacher->id,
+            'day' => 'السبت',
+            'class_schedule' => 'الحصة الأولى'
+        ]);
+        $response = $this->delete(route('class-schedules.destroy', $class_schedule->id));
+        $response->assertStatus(204);
+        $this->assertDatabaseMissing('class_schedules', ['id' => $class_schedule->id]);
     }
 }

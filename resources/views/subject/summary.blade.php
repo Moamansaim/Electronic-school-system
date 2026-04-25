@@ -2,22 +2,23 @@
 @section('title', 'رفع الملخصات والمستندات التعليمية')
 
 @section('content')
+  
     <div class="row">
-        <div class="col-md-12">
-            <div class="card border-0 shadow-sm" style="border-radius: 15px;">
-                <div class="card-header bg-white py-4">
-                    <h4 class="font-weight-bold text-dark mb-0">
-                        <i class="fas fa-file-upload text-primary mr-2"></i> إرفاق مستندات لمادة: {{ $subject->name }}
-                    </h4>
-                </div>
+        <div class="card-body p-4">
 
-                <div class="card-body p-4">
+            <div class="col-md-12">
+                <div class="card border-0 shadow-sm" style="border-radius: 15px;">
+                    <div class="card-header bg-white py-4">
+                        <h4 class="font-weight-bold text-dark mb-0">
+                            <i class="fas fa-file-upload text-primary mr-2"></i> إرفاق مستندات لمادة: {{ $subject->name }}
+                        </h4>
+                    </div>
                     <div id="drop-zone"
                         class="d-flex flex-column align-items-center justify-content-center p-5 border rounded"
                         style="border: 2px dashed #007bff; background-color: #f8f9fa; cursor: pointer; transition: 0.3s;">
                         <i class="fas fa-cloud-upload-alt fa-4x text-primary mb-3"></i>
                         <h5 class="text-secondary">اسحب الملفات هنا أو اضغط للاختيار</h5>
-                        <small class="text-muted">PDF, Images, Word (DOCX)</small>
+                        <small class="text-muted">PDF, Images:png,jpeg,jpg</small>
                     </div>
 
                     <input type="file" id="file-input" multiple style="display: none;">
@@ -79,15 +80,15 @@
                 let div = document.createElement('div');
                 div.className = "d-flex justify-content-between align-items-center p-3 mb-2 bg-light border rounded";
                 div.innerHTML = `
-                    <div>
-                        <i class="fas fa-file-alt text-primary mr-2"></i>
-                        <span class="font-weight-bold">${file.name}</span>
-                        <small class="text-muted ml-2">(${(file.size / 1024).toFixed(1)} KB)</small>
-                    </div>
-                    <button type="button" class="btn btn-outline-danger btn-sm rounded-pill" onclick="removeFile(${index})">
-                        <i class="fas fa-trash"></i> حذف
-                    </button>
-                `;
+                                                            <div>
+                                                                <i class="fas fa-file-alt text-primary mr-2"></i>
+                                                                <span class="font-weight-bold">${file.name}</span>
+                                                                <small class="text-muted ml-2">(${(file.size / 1024).toFixed(1)} KB)</small>
+                                                            </div>
+                                                            <button type="button" class="btn btn-outline-danger btn-sm rounded-pill" onclick="removeFile(${index})">
+                                                                <i class="fas fa-trash"></i> حذف
+                                                            </button>
+                                                        `;
                 fileList.appendChild(div);
             });
         }

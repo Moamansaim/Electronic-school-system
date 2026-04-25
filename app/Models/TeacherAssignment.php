@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class TeacherAssignment extends Model
 {
-     use HasFactory, SoftDeletes;
+     use HasFactory ;
     protected $fillable = ['teacher_id', 'classroom_id', 'subject_id', 'grade_level_id'];
 
     public function teacher(): BelongsTo

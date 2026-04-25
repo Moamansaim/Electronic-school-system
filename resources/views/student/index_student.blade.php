@@ -20,7 +20,7 @@
                     style="background: #3182ce; color: white; padding: 8px 15px; border-radius: 5px; border: none; cursor: pointer;">
                     نسخ البيانات كاملة
                 </button>
-                 <button onclick="print()" class="btn btn-primary mt-3"
+                <button onclick="print()" class="btn btn-primary mt-3"
                     style="background: #3182ce; color: white; padding: 8px 15px; border-radius: 5px; border: none; cursor: pointer;">
                     طباعة
                 </button>
@@ -32,7 +32,7 @@
                     const pass = "{{ session('generated_password') }}";
                     const textToCopy = "SchoolID: " + school_id + "\nPassword: " + pass;
 
-                    navigator.clipboard.writeText(textToCopy).then(function() {
+                    navigator.clipboard.writeText(textToCopy).then(function () {
                         alert('تم نسخ الإيميل وكلمة المرور معاً بنجاح!');
                     }).catch(err => {
                         console.error('فشل النسخ: ', err);
@@ -98,8 +98,8 @@
                                             </div>
                                             <div>
                                                 <span class="font-weight-bold text-dark d-block">
-                                                    {{ $student->full_name }} 
-                                                   
+                                                    {{ $student->full_name }}
+
                                                 </span>
                                                 <small class="text-muted">تاريخ الميلاد:
                                                     {{ $student->date_of_birth }}</small>
@@ -149,8 +149,7 @@
                                                 aria-labelledby="dropdownMenuButton{{ $student->id }}"
                                                 style="border-radius: 12px; min-width: 180px; z-index: 1050; text-align: right;">
 
-                                                <h6
-                                                    class="dropdown-header text-xs text-uppercase text-muted font-weight-bold">
+                                                <h6 class="dropdown-header text-xs text-uppercase text-muted font-weight-bold">
                                                     الخيارات</h6>
 
                                                 {{-- <a class="dropdown-item py-2 d-flex align-items-center"
@@ -160,14 +159,14 @@
 
                                                 <a class="dropdown-item py-2 d-flex align-items-center"
                                                     href="{{ route('students.show', $student->id) }} ">
-                                                    <i class="fas fa-eye text-dark ml-2"></i>
-                                                    <span>تفاصيل الطالب</span>
+                                                    <i class="nav-icon fas fa-user-graduate "></i>
+                                                    <span class="ml-2">ملف الطالب</span>
                                                 </a>
 
                                                 <a class="dropdown-item py-2 d-flex align-items-center"
                                                     href="{{ route('students.edit', $student->id) }}">
-                                                    <i class="fas fa-pen text-info ml-2"></i>
-                                                    <span>تعديل البيانات</span>
+                                                    <i class="fas fa-pen text-info "></i>
+                                                    <span class="ml-2">تعديل البيانات</span>
                                                 </a>
 
                                                 <div class="dropdown-divider"></div>
@@ -181,37 +180,7 @@
                                             </div>
                                         </div>
 
-                                        <div class="modal fade" id="deleteModal{{ $student->id }}" tabindex="-1"
-                                            role="dialog" aria-hidden="true">
-                                            <div class="modal-dialog modal-dialog-centered" role="document">
-                                                <div class="modal-content border-0 shadow" style="border-radius: 15px;">
-                                                    <div class="modal-body p-5 text-center">
-                                                        <div class="text-danger mb-4">
-                                                            <i class="fas fa-exclamation-circle fa-4x"></i>
-                                                        </div>
-                                                        <h3 class="font-weight-bold">تأكيد الحذف</h3>
-                                                        <p class="text-muted">هل أنت متأكد من حذف الطالب <br>
-                                                            <strong class="text-dark">({{ $student->first_name }}
-                                                                {{ $student->family_name }})</strong>؟
-                                                        </p>
-                                                        <div class="d-flex justify-content-center mt-4">
-                                                            <button type="button"
-                                                                class="btn btn-light px-4 ml-2 rounded-pill"
-                                                                data-dismiss="modal">إلغاء</button>
 
-                                                            <form action="{{ route('students.destroy', $student->id) }}"
-                                                                method="POST">
-                                                                @csrf
-                                                                @method('DELETE')
-                                                                <button type="submit"
-                                                                    class="btn btn-danger px-4 rounded-pill">تأكيد
-                                                                    الحذف</button>
-                                                            </form>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
                                     </td>
                                 </tr>
                             @empty
@@ -235,6 +204,36 @@
             @endif
         </div>
     </div>
+
+    @foreach ($students as $student)
+        <div class="modal fade" id="deleteModal{{ $student->id }}" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content border-0 shadow" style="border-radius: 15px;">
+                    <div class="modal-body p-5 text-center">
+                        <div class="text-danger mb-4">
+                            <i class="fas fa-exclamation-circle fa-4x"></i>
+                        </div>
+                        <h3 class="font-weight-bold">تأكيد الحذف</h3>
+                        <p class="text-muted">هل أنت متأكد من حذف الطالب <br>
+                            <strong class="text-dark">({{ $student->first_name }}
+                                {{ $student->family_name }})</strong>؟
+                        </p>
+                        <div class="d-flex justify-content-center mt-4">
+                            <button type="button" class="btn btn-light px-4 ml-2 rounded-pill"
+                                data-dismiss="modal">إلغاء</button>
+
+                            <form action="{{ route('students.destroy', $student->id) }}" method="POST">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-danger px-4 rounded-pill">تأكيد
+                                    الحذف</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endforeach
 
     <style>
         /* محاذاة عامة للجدول */

@@ -71,70 +71,44 @@
                                         </small>
                                     </td>
                                     <td class="text-center" style="overflow: visible;">
-    <div class="dropdown">
-        <button class="btn btn-light btn-sm rounded-pill shadow-sm px-3" type="button"
-            id="dropdownMenuButton{{ $subject->id }}" data-toggle="dropdown"
-            data-boundary="window" aria-haspopup="true" aria-expanded="false">
-            <i class="fas fa-ellipsis-v text-muted"></i>
-        </button>
+                                        <div class="dropdown">
+                                            <button class="btn btn-light btn-sm rounded-pill shadow-sm px-3" type="button"
+                                                id="dropdownMenuButton{{ $subject->id }}" data-toggle="dropdown"
+                                                data-boundary="window" aria-haspopup="true" aria-expanded="false">
+                                                <i class="fas fa-ellipsis-v text-muted"></i>
+                                            </button>
 
-        <div class="dropdown-menu dropdown-menu-right border-0 shadow-lg mt-2"
-            aria-labelledby="dropdownMenuButton{{ $subject->id }}"
-            style="border-radius: 12px; min-width: 180px; z-index: 1050; text-align: right;">
+                                            <div class="dropdown-menu dropdown-menu-right border-0 shadow-lg mt-2"
+                                                aria-labelledby="dropdownMenuButton{{ $subject->id }}"
+                                                style="border-radius: 12px; min-width: 180px; z-index: 1050; text-align: right;">
 
-            <h6 class="dropdown-header text-xs text-uppercase text-muted font-weight-bold">
-                خيارات المادة
-            </h6>
+                                                <h6 class="dropdown-header text-xs text-uppercase text-muted font-weight-bold">
+                                                    خيارات المادة
+                                                </h6>
 
-            <a class="dropdown-item" href="{{ route('subjects.show', $subject->id) }}">
-                <i class="fas fa-cloud-upload-alt text-dark mr-2"></i> رفع ملخصات
-            </a>
+                                                <a class="dropdown-item" href="{{ route('subjects.show', $subject->id) }}">
+                                                    <i class="fas fa-cloud-upload-alt text-dark mr-2"></i> رفع ملخصات
+                                                </a>
 
-            <a class="dropdown-item" href="{{ route('files.view', $subject->id) }}">
-                <i class="fas fa-folder-open mr-2" style="color: #6f42c1;"></i> عرض المرفقات
-            </a>
+                                                <a class="dropdown-item" href="{{ route('files.view', $subject->id) }}">
+                                                    <i class="fas fa-folder-open mr-2" style="color: #6f42c1;"></i> عرض المرفقات
+                                                </a>
 
-            <a class="dropdown-item" href="{{ route('subjects.edit', $subject->id) }}">
-                <i class="fas fa-pen text-info mr-2"></i> تعديل المادة
-            </a>
+                                                <a class="dropdown-item" href="{{ route('subjects.edit', $subject->id) }}">
+                                                    <i class="fas fa-pen text-info mr-2"></i> تعديل المادة
+                                                </a>
 
-            <div class="dropdown-divider"></div>
+                                                <div class="dropdown-divider"></div>
 
-            <button type="button" class="dropdown-item text-danger" data-toggle="modal"
-                data-target="#deleteModal{{ $subject->id }}">
-                <i class="fas fa-trash-alt mr-2"></i> حذف المادة
-            </button>
-        </div>
-    </div>
-</td>
-
-                                        <div class="modal fade" id="deleteModal{{ $subject->id }}" tabindex="-1" role="dialog">
-                                            <div class="modal-dialog modal-dialog-centered" role="document">
-                                                <div class="modal-content border-0 shadow" style="border-radius: 15px;">
-                                                    <div class="modal-body p-5 text-center">
-                                                        <div class="text-danger mb-4">
-                                                            <i class="fas fa-exclamation-circle fa-4x"></i>
-                                                        </div>
-                                                        <h3 class="font-weight-bold">تأكيد الحذف</h3>
-                                                        <p class="text-muted">هل أنت متأكد من حذف
-                                                            <strong>({{ $subject->name }})</strong>؟<br>هذا الإجراء لا يمكن
-                                                            التراجع عنه.
-                                                        </p>
-                                                        <div class="d-flex justify-content-center mt-4">
-                                                            <button type="button" class="btn btn-light px-4 mr-2 rounded-pill"
-                                                                data-dismiss="modal">إلغاء</button>
-                                                            <form action="{{ route('subjects.destroy', $subject->id) }}"
-                                                                method="POST">
-                                                                @csrf @method('DELETE')
-                                                                <button type="submit"
-                                                                    class="btn btn-danger px-4 rounded-pill">تأكيد
-                                                                    الحذف</button>
-                                                            </form>
-                                                        </div>
-                                                    </div>
-                                                </div>
+                                                <button type="button" class="dropdown-item text-danger" data-toggle="modal"
+                                                    data-target="#deleteModal{{ $subject->id }}">
+                                                    <i class="fas fa-trash-alt mr-2"></i> حذف المادة
+                                                </button>
                                             </div>
                                         </div>
+                                    </td>
+
+
                                     </td>
                                 </tr>
                             @empty
@@ -159,9 +133,35 @@
         </div>
     </div>
 
-    <style>
-        <style>
+    @foreach ($subjects as $subject)
+        <div class="modal fade" id="deleteModal{{ $subject->id }}" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content border-0 shadow" style="border-radius: 15px;">
+                    <div class="modal-body p-5 text-center">
+                        <div class="text-danger mb-4">
+                            <i class="fas fa-exclamation-circle fa-4x"></i>
+                        </div>
+                        <h3 class="font-weight-bold">تأكيد الحذف</h3>
+                        <p class="text-muted">هل أنت متأكد من حذف
+                            <strong>({{ $subject->name }})</strong>؟<br>هذا الإجراء لا يمكن
+                            التراجع عنه.
+                        </p>
+                        <div class="d-flex justify-content-center mt-4">
+                            <button type="button" class="btn btn-light px-4 mr-2 rounded-pill"
+                                data-dismiss="modal">إلغاء</button>
+                            <form action="{{ route('subjects.destroy', $subject->id) }}" method="POST">
+                                @csrf @method('DELETE')
+                                <button type="submit" class="btn btn-danger px-4 rounded-pill">تأكيد
+                                    الحذف</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endforeach
 
+    <style>
         /* محاذاة عامة للجدول */
         .table th,
         .table td {
@@ -196,5 +196,5 @@
             gap: 0.5rem;
         }
     </style>
-    </style>
+
 @endsection

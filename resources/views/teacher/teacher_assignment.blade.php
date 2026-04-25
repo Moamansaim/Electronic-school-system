@@ -17,8 +17,7 @@
                     <div class="row">
                         <div class="col-md-12 mb-4">
                             <label class="form-label font-weight-bold">اسم المعلم</label>
-                            <input type="text" class="form-control bg-light" readonly
-                                value="{{ $teacher->full_name}}">
+                            <input type="text" class="form-control bg-light" readonly value="{{ $teacher->full_name}}">
                             <input type="hidden" name="teacher_id" value="{{ $teacher->id }}">
                         </div>
                     </div>
@@ -59,7 +58,8 @@
                 </div>
 
                 <div class="card-footer bg-light py-3 d-flex justify-content-between">
-                    <a href="{{ route('teachers.index') }}" class="btn btn-link text-muted">العودة للقائمة</a>
+                    <a href="{{ route('teachers.index') }}" class="btn btn-link text-muted"><i
+                            class="fas fa-arrow-right mr-1"></i>العودة للقائمة السابقة</a>
                     <button type="submit" class="btn btn-primary px-5 shadow-sm">
                         <i class="fas fa-save ml-2"></i> حفظ التعيين
                     </button>
@@ -70,8 +70,8 @@
 
     @push('script')
         <script>
-            $(document).ready(function() {
-                $('#grade_level').on('change', function() {
+            $(document).ready(function () {
+                $('#grade_level').on('change', function () {
                     var gradeId = $(this).val();
                     var classroomSelect = $('#classroom');
                     var subjectSelect = $('#subject');
@@ -89,21 +89,21 @@
                             url: url,
                             type: "GET",
                             dataType: "json",
-                            success: function(data) {
+                            success: function (data) {
                                 classroomSelect.empty().append(
                                     '<option value="">اختر الصف...</option>');
-                                $.each(data.classrooms, function(key, value) {
+                                $.each(data.classrooms, function (key, value) {
                                     classroomSelect.append('<option value="' + value.id +
                                         '">' + value.name + '</option>');
                                 });
                                 subjectSelect.empty().append(
                                     '<option value="">اختر المادة...</option>');
-                                $.each(data.subjects, function(key, value) {
+                                $.each(data.subjects, function (key, value) {
                                     subjectSelect.append('<option value="' + value.id +
                                         '">' + value.name + '</option>');
                                 });
                             },
-                            error: function(xhr) {
+                            error: function (xhr) {
                                 console.error(xhr.responseText); // لتتبع الخطأ في الـ Console
                                 alert('حدث خطأ أثناء جلب البيانات، يرجى المحاولة لاحقاً.');
                             }

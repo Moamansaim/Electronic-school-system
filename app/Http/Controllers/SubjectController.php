@@ -32,7 +32,6 @@ class SubjectController extends Controller
     public function create(): View
     {
         $grade_levels = $this->getGradeLevels();
-
         return view('subject.create_subject', compact('grade_levels'));
     }
 
@@ -41,18 +40,10 @@ class SubjectController extends Controller
      */
     public function store(SubjectRequest $request): RedirectResponse
     {
-        try {
-            Subject::create($request->validated());
-
-            return redirect()
-                ->route('subjects.index')
-                ->with('success', 'تمت إضافة المادة الدراسية بنجاح.');
-        } catch (Exception $e) {
-            return redirect()
-                ->back()
-                ->withInput()
-                ->with('error', 'حدث خطأ أثناء حفظ المادة الدراسية، يرجى المحاولة لاحقًا.');
-        }
+        Subject::create($request->validated());
+        return redirect()
+            ->route('subjects.index')
+            ->with('success', 'تمت إضافة المادة الدراسية بنجاح.');
     }
 
 
@@ -61,7 +52,6 @@ class SubjectController extends Controller
      */
     public function show(Subject $subject): View
     {
-
         return view('subject.summary', compact('subject'));
     }
 
@@ -72,7 +62,6 @@ class SubjectController extends Controller
     public function edit(Subject $subject): View
     {
         $grade_levels = $this->getGradeLevels();
-
         return view('subject.edit_subject', compact('subject', 'grade_levels'));
     }
 
@@ -81,18 +70,10 @@ class SubjectController extends Controller
      */
     public function update(SubjectRequest $request, Subject $subject): RedirectResponse
     {
-        try {
-            $subject->update($request->validated());
-
-            return redirect()
-                ->route('subjects.index')
-                ->with('success', 'تم تحديث المادة الدراسية بنجاح.');
-        } catch (Exception $e) {
-            return redirect()
-                ->back()
-                ->withInput()
-                ->with('error', 'حدث خطأ أثناء تعديل المادة الدراسية، يرجى المحاولة لاحقًا.');
-        }
+        $subject->update($request->validated());
+        return redirect()
+            ->route('subjects.index')
+            ->with('success', 'تم تحديث المادة الدراسية بنجاح.');
     }
 
     /**
@@ -100,15 +81,10 @@ class SubjectController extends Controller
      */
     public function destroy(Subject $subject): RedirectResponse
     {
-        try {
-
-            $subject->delete();
-
-            return redirect()->back()->with('success', "تم حذف مادة ({$subject->name}) بنجاح");
-        } catch (Exception $e) {
-            return redirect()->back()
-                ->with('error', 'حدث خطأ أثناء عملية حذف المادة الدراسية، يرجى المحاولة لاحقًا.');
-        }
+        $subject->delete();
+        return redirect()
+            ->back()
+            ->with('success', "تم حذف مادة ({$subject->name}) بنجاح");
     }
 
     /**

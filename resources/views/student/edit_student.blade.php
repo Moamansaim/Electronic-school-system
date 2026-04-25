@@ -159,13 +159,13 @@
                                         <i class="fas fa-plus ml-1"></i> إضافة رقم جديد
                                     </button>
                                 </div>
-                                @foreach ($student->phoneNumbers as $phoneNumber)
+                                @foreach ($student->phones as $phone)
                                     <div class="input-group mb-2 phone-item">
                                         <div class="input-group-prepend">
                                             <span class="input-group-text bg-light border-right-0"><i
                                                     class="fas fa-mobile-alt text-muted"></i></span>
                                         </div>
-                                        <input type="text" value="{{ $phoneNumber->phone_number }}"
+                                        <input type="text" value="{{ $phone->phone_number }}"
                                             name="phone_numbers[]" class="form-control border-left-0"
                                             placeholder="أدخل رقم الجوال">
                                         <div class="input-group-append">
@@ -260,7 +260,7 @@
 
                 <div class="card-footer bg-light py-3 d-flex justify-content-between align-items-center">
                     <a href="{{ route('students.index') }}" class="text-muted">
-                        <i class="fas fa-arrow-right mr-1"></i> العودة للقائمة
+                        <i class="fas fa-arrow-right mr-1"></i> العودة للقائمة السابقة
                     </a>
                     <button type="submit" class="btn btn-success px-5 shadow-sm" style="border-radius: 8px;">
                         <i class="fas fa-sync-alt ml-2"></i> تحديث البيانات

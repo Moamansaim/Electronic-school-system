@@ -84,44 +84,14 @@
                                                 <span>تعديل</span>
                                             </a>
 
-                                            <button class="btn btn-sm btn-danger d-flex align-items-center"
-                                                data-toggle="modal" data-target="#deleteModal{{ $classroom->id }}"
-                                                title="حذف">
+                                            <button class="btn btn-sm btn-danger d-flex align-items-center" data-toggle="modal"
+                                                data-target="#deleteModal{{ $classroom->id }}" title="حذف">
                                                 <i class="fas fa-trash-alt mr-1"></i>
                                                 <span>حذف</span>
                                             </button>
                                         </div>
 
-                                        <div class="modal fade" id="deleteModal{{ $classroom->id }}" tabindex="-1"
-                                            role="dialog">
-                                            <div class="modal-dialog modal-dialog-centered" role="document">
-                                                <div class="modal-content border-0 shadow" style="border-radius: 15px;">
-                                                    <div class="modal-body p-5 text-center">
-                                                        <div class="text-danger mb-4">
-                                                            <i class="fas fa-exclamation-circle fa-4x"></i>
-                                                        </div>
-                                                        <h3 class="font-weight-bold">تأكيد الحذف</h3>
-                                                        <p class="text-muted">هل أنت متأكد من حذف
-                                                            <strong>({{ $classroom->name }})</strong>؟<br>هذا الإجراء لا
-                                                            يمكن التراجع عنه.
-                                                        </p>
-                                                        <div class="d-flex justify-content-center mt-4">
-                                                            <button type="button"
-                                                                class="btn btn-light px-4 mr-2 rounded-pill"
-                                                                data-dismiss="modal">إلغاء</button>
-                                                            <form
-                                                                action="{{ route('classrooms.destroy', $classroom->id) }}"
-                                                                method="POST">
-                                                                @csrf @method('DELETE')
-                                                                <button type="submit"
-                                                                    class="btn btn-danger px-4 rounded-pill">تأكيد
-                                                                    الحذف</button>
-                                                            </form>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
+
                                     </td>
                                 </tr>
                             @empty
@@ -146,9 +116,35 @@
         </div>
     </div>
 
-    <style>
-        <style>
+    @foreach ($classrooms as $classroom)
+        <div class="modal fade" id="deleteModal{{ $classroom->id }}" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content border-0 shadow" style="border-radius: 15px;">
+                    <div class="modal-body p-5 text-center">
+                        <div class="text-danger mb-4">
+                            <i class="fas fa-exclamation-circle fa-4x"></i>
+                        </div>
+                        <h3 class="font-weight-bold">تأكيد الحذف</h3>
+                        <p class="text-muted">هل أنت متأكد من حذف
+                            <strong>({{ $classroom->name }})</strong>؟<br>هذا الإجراء لا
+                            يمكن التراجع عنه.
+                        </p>
+                        <div class="d-flex justify-content-center mt-4">
+                            <button type="button" class="btn btn-light px-4 mr-2 rounded-pill"
+                                data-dismiss="modal">إلغاء</button>
+                            <form action="{{ route('classrooms.destroy', $classroom->id) }}" method="POST">
+                                @csrf @method('DELETE')
+                                <button type="submit" class="btn btn-danger px-4 rounded-pill">تأكيد
+                                    الحذف</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endforeach
 
+    <style>
         /* محاذاة عامة للجدول */
         .table th,
         .table td {
@@ -183,5 +179,8 @@
             gap: 0.5rem;
         }
     </style>
-    </style>
+
+
+
+
 @endsection

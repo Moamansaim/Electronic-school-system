@@ -123,14 +123,21 @@
             <form action="{{ route('login') }}" method="post">
                 @csrf
                 <div class="form-group">
-                    <input type="text" name="school_id" class="form-control" placeholder="الرقم المدرسي" required>
+                    <input type="text" name="school_id" class="form-control @error('school_id') is-invalid @enderror"
+                        placeholder="الرقم المدرسي" required>
+                    @error('school_id')
+                        <small class="text-danger mt-1 d-block">{{ $message }}</small>
+                    @enderror
                 </div>
                 <div class="form-group">
-                    <input type="password" name="password" class="form-control" placeholder="كلمة المرور" required>
+                    <input type="password" name="password" class="form-control @error('password') is-invalid @enderror" placeholder="كلمة المرور" required>
+                    @error('password')
+                        <small class="text-danger mt-1 d-block">{{ $message }}</small>
+                    @enderror
                 </div>
                 <div class="d-flex justify-content-between mb-3">
                     <div class="custom-control custom-checkbox">
-                        <input type="checkbox" class="custom-control-input" id="rem">
+                        <input type="checkbox" name="remember" class="custom-control-input" id="rem">
                         <label class="custom-control-label small" for="rem">تذكرني</label>
                     </div>
                     <a href="#" data-toggle="modal" data-target="#modal-forgot" class="small font-weight-bold">نسيت كلمة

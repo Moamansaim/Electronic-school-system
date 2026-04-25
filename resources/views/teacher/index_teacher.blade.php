@@ -31,7 +31,7 @@
                     const textToCopy = "SchoolID: " + school_id + "\nPassword: " + pass;
 
                     // استخدام Clipboard API للنسخ
-                    navigator.clipboard.writeText(textToCopy).then(function () {
+                    navigator.clipboard.writeText(textToCopy).then(function() {
                         alert('تم نسخ الإيميل وكلمة المرور معاً بنجاح!');
                     }).catch(err => {
                         console.error('فشل النسخ: ', err);
@@ -146,35 +146,37 @@
                                                 aria-labelledby="dropdownMenuButton{{ $teacher->id }}"
                                                 style="border-radius: 12px; min-width: 180px; z-index: 1050; text-align: right;">
 
-                                                <h6 class="dropdown-header text-xs text-uppercase text-muted font-weight-bold">
+                                                <h6
+                                                    class="dropdown-header text-xs text-uppercase text-muted font-weight-bold">
                                                     الخيارات</h6>
 
                                                 <a class="dropdown-item py-2 d-flex align-items-center"
                                                     href="{{ route('teachers.assignments.data', $teacher->id) }}">
-                                                    <i class="fas fa-eye text-dark ml-2"></i> <span>عرض التعيينات</span>
+                                                    <i class="fas fa-eye text-dark "></i> <span class="ml-2">عرض
+                                                        التعيينات</span>
                                                 </a>
 
                                                 <a class="dropdown-item py-2 d-flex align-items-center"
                                                     href="{{ route('teachers.assignment', $teacher->id) }}">
-                                                    <i class="fas fa-plus-circle text-primary ml-2"></i>
-                                                    <span>إضافة تعيين</span>
+                                                    <i class="fas fa-plus-circle text-primary "></i>
+                                                    <span class="ml-2">إضافة تعيين</span>
                                                 </a>
 
                                                 <a class="dropdown-item py-2 d-flex align-items-center"
                                                     href="{{ route('class-schedules.create', $teacher->id) }}">
-                                                    <i class="fas fa-plus-circle text-primary ml-2"></i>
-                                                    <span>إضافة حصة دراسية</span>
+                                                    <i class="fas fa-plus-circle text-primary "></i>
+                                                    <span class="ml-2">إضافة حصة دراسية</span>
                                                 </a>
 
                                                 <a class="dropdown-item py-2 d-flex align-items-center"
                                                     href="{{ route('class-schedules.show', $teacher->id) }}">
-                                                    <i class="fas fa-eye text-dark ml-2"></i> <span>عرض جدول الحصص</span>
+                                                    <i class="fas fa-eye text-dark "></i> <span class="ml-2">عرض جدول الحصص</span>
                                                 </a>
 
                                                 <a class="dropdown-item py-2 d-flex align-items-center"
                                                     href="{{ route('teachers.edit', $teacher->id) }}">
-                                                    <i class="fas fa-pen text-info ml-2"></i>
-                                                    <span>تعديل البيانات</span>
+                                                    <i class="fas fa-pen text-info "></i>
+                                                    <span class="ml-2">تعديل البيانات</span>
                                                 </a>
 
                                                 <div class="dropdown-divider"></div>
@@ -183,41 +185,12 @@
                                                     class="dropdown-item py-2 d-flex align-items-center text-danger"
                                                     data-toggle="modal" data-target="#deleteModal{{ $teacher->id }}">
                                                     <i class="fas fa-trash-alt ml-2"></i>
-                                                    <span>حذف المعلم</span>
+                                                    <span class="ml-2" >حذف المعلم</span>
                                                 </button>
                                             </div>
                                         </div>
 
-                                        <div class="modal fade" id="deleteModal{{ $teacher->id }}" tabindex="-1" role="dialog"
-                                            aria-hidden="true">
-                                            <div class="modal-dialog modal-dialog-centered" role="document">
-                                                <div class="modal-content border-0 shadow" style="border-radius: 15px;">
-                                                    <div class="modal-body p-5 text-center">
-                                                        <div class="text-danger mb-4">
-                                                            <i class="fas fa-exclamation-circle fa-4x"></i>
-                                                        </div>
-                                                        <h3 class="font-weight-bold">تأكيد الحذف</h3>
-                                                        <p class="text-muted">هل أنت متأكد من حذف المعلم <br>
-                                                            <strong class="text-dark">({{ $teacher->first_name }}
-                                                                {{ $teacher->family_name }})</strong>؟
-                                                        </p>
-                                                        <div class="d-flex justify-content-center mt-4">
-                                                            <button type="button" class="btn btn-light px-4 ml-2 rounded-pill"
-                                                                data-dismiss="modal">إلغاء</button>
 
-                                                            <form action="{{ route('teachers.destroy', $teacher->id) }}"
-                                                                method="POST">
-                                                                @csrf
-                                                                @method('DELETE')
-                                                                <button type="submit"
-                                                                    class="btn btn-danger px-4 rounded-pill">تأكيد
-                                                                    الحذف</button>
-                                                            </form>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
                                     </td>
                                 </tr>
                             @empty
@@ -242,9 +215,37 @@
         </div>
     </div>
 
-    <style>
-        <style>
+    @foreach ($teachers as $teacher)
+        <div class="modal fade" id="deleteModal{{ $teacher->id }}" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content border-0 shadow" style="border-radius: 15px;">
+                    <div class="modal-body p-5 text-center">
+                        <div class="text-danger mb-4">
+                            <i class="fas fa-exclamation-circle fa-4x"></i>
+                        </div>
+                        <h3 class="font-weight-bold">تأكيد الحذف</h3>
+                        <p class="text-muted">هل أنت متأكد من حذف المعلم <br>
+                            <strong class="text-dark">({{ $teacher->first_name }}
+                                {{ $teacher->family_name }})</strong>؟
+                        </p>
+                        <div class="d-flex justify-content-center mt-4">
+                            <button type="button" class="btn btn-light px-4 ml-2 rounded-pill"
+                                data-dismiss="modal">إلغاء</button>
 
+                            <form action="{{ route('teachers.destroy', $teacher->id) }}" method="POST">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-danger px-4 rounded-pill">تأكيد
+                                    الحذف</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endforeach
+
+    <style>
         /* محاذاة عامة للجدول */
         .table th,
         .table td {
@@ -279,5 +280,5 @@
             gap: 0.5rem;
         }
     </style>
-    </style>
+
 @endsection

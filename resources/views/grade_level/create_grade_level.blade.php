@@ -38,7 +38,7 @@
 
                 <div class="card-footer bg-light py-3 d-flex justify-content-between align-items-center">
                     <a href="{{ route('grade_levels.index') }}" class="text-muted">
-                        <i class="fas fa-arrow-right mr-1"></i> العودة للقائمة
+                        <i class="fas fa-arrow-right mr-1"></i> العودة للقائمة السابقة
                     </a>
                     <button type="submit" class="btn btn-primary px-5 shadow-sm" style="border-radius: 8px;">
                         <i class="fas fa-save ml-2"></i> حفظ

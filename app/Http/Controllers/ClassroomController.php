@@ -86,6 +86,7 @@ class ClassroomController extends Controller
             if (empty($data['teacher_id'])) {
                 $data['teacher_id'] = null;
             }
+
             $classroom->update($data);
 
             return redirect()
@@ -104,15 +105,8 @@ class ClassroomController extends Controller
      */
     public function destroy(Classroom $classroom): RedirectResponse
     {
-        try {
-            $classroom->delete();
-
-            return redirect()->back()->with('success', "تم حذف ({$classroom->name}) بنجاح");
-        } catch (Exception $e) {
-            return redirect()
-                ->back()
-                ->with('error', 'حدث خطأ أثناء عملية حذف الصف الدراسي، يرجى المحاولة لاحقًا.');
-        }
+        $classroom->delete();
+        return redirect()->back()->with('success', "تم حذف ({$classroom->name}) بنجاح");
     }
 
     /**

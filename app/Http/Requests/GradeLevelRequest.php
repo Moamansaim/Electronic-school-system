@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\CheckGradeLevelSubjects;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -20,7 +21,8 @@ class GradeLevelRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
+
+        $rules = [
             'name' => [
                 'required',
                 'string',
@@ -30,6 +32,17 @@ class GradeLevelRequest extends FormRequest
                 'regex:/^(أولى ثانوي|ثانية ثانوي|ثالثة ثانوي|أولى اعدادي|ثانية اعدادي|ثالثة اعدادي|أولى ابتدائي|ثانية ابتدائي|ثالثة ابتدائي|رابعة ابتدائي|خامسة ابتدائي|سادسة ابتدائي|)$/u',
             ],
         ];
+
+
+        if ($this->isMethod('put') || $this->isMethod('patch')) {
+            $grade_level_id = $this->route('grade_level')->id;
+
+            if ($grade_level_id) {
+                $rules['name'][] =  new CheckGradeLevelSubjects($grade_level_id);
+            }
+        }
+
+        return $rules;
     }
 
     /**

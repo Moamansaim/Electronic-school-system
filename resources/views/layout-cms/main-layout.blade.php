@@ -119,9 +119,9 @@
                     </div>
                     @auth
                         <div class="info px-3">
-                            @php $teacher = Auth::user()->teacher; @endphp
-                            <a href="#"
-                                class="d-block font-weight-bold text-white">{{ $teacher ? $teacher->full_name : ' مستخدم نظام ' }}</a>
+                            @php $user = Auth::user()->teacher ?? Auth::user()->student; @endphp
+                            <a href="#" class="d-block font-weight-bold text-white"
+                                style="font-size:14px">{{ $user ? $user->full_name : ' مستخدم نظام ' }}</a>
                         </div>
                     @endauth
                 </div>
@@ -184,7 +184,51 @@
                                             class="fas fa-tasks nav-icon"></i>
                                         <p>بيانات الاختبارات</p>
                                     </a></li>
+                                <li class="nav-item">
+                                    <a href="{{ route('exam-schedules.index') }}" class="nav-link">
+                                        <i class="fas fa-calendar-alt nav-icon"></i>
+                                        <p> جدول الاختبارات</p>
+                                    </a>
+                                </li>
                             </ul>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <i class="nav-icon fas fa-calendar-alt"></i>
+                                <p>
+                                    جدول الحصص الطلابية
+                                    <i class="fas fa-angle-left right"></i>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    {{-- تأكد من تغيير اسم الـ route إلى اسم الراوت الخاص بجدول الحصص لديك --}}
+                                    <a href="{{ route('students.show-schedule') }}" class="nav-link">
+                                        <i class="fas fa-table nav-icon"></i>
+                                        <p>عرض الجدول الدراسي</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('exams.student') }}" class="nav-link">
+                                <i class="fas fa-graduation-cap nav-icon "></i>
+                                <p>
+                                    الاختبارات الطلابية
+                                    <i class="fas fa-angle-left right"></i>
+                                </p>
+                            </a>
+
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('exams.student.marks') }}" class="nav-link">
+                                <i class="fas fa-file-invoice nav-icon "></i>
+                                <p>
+                                    البيانات الفصلية
+                                    <i class="fas fa-angle-left right"></i>
+                                </p>
+                            </a>
+
                         </li>
                     </ul>
                 </nav>
@@ -239,6 +283,7 @@
     <script src="{{ asset('cms/plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('cms/dist/js/adminlte.min.js') }}"></script>
     <script src="{{ asset('js/sweetalert2.min.js') }}"></script>
+    <script src="{{ asset('js/app.js') }}"></script>
     @stack('script')
 </body>
 

@@ -9,14 +9,36 @@
         <div class="card border-0 shadow-sm" style="border-radius: 15px;">
             <div class="card-header bg-white border-0 py-4">
                 <div class="row align-items-center">
-                    <div class="col">
+                    <div class="col-md-4">
                         <h4 class="mb-0 font-weight-bold text-dark">
                             <i class="fas fa-graduation-cap text-primary ml-2"></i> قائمة أسئلة اختبار
                             {{ $exam->subject->name ?? '' }}
                         </h4>
                     </div>
+                    <div class="col-md-8 text-right">
+                        <div class="d-flex justify-content-end align-items-center">
+                            <form action="{{ route('questions.index') }}" method="GET" class="mr-3">
+                                <div class="input-group border rounded-pill px-2 py-1 bg-light">
+                                    <input type="text" name="search" class="form-control bg-transparent border-0"
+                                        placeholder="ابحث عن سؤال   ..." value="{{ request('search') }}"
+                                        style="width: 200px;">
+                                    <div class="input-group-append">
+                                        <button class="btn btn-link text-muted" type="submit">
+                                            <i class="fas fa-search"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                            <a href="{{ route('exams.show', $exam->id) }}" class="btn btn-primary shadow-sm px-4 rounded-pill">
+                                <i class="fas fa-plus mr-1"></i> إضافة سؤال جديد
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
+
+
+
 
             <div class="card-body p-4">
                 <div class="accordion" id="questionsAccordion">
@@ -38,10 +60,10 @@
                                                 <div class="row">
                                                     <div class="col-md-4"><strong>النوع:</strong> <span class="badge badge-info">
                                                             {{ match ($question->question_type) {
-                                                            'multiple_choice' => 'خيار من متعدد',
-                                                            'essay_question' => 'مقالي',
-                                                            default => $question->question_type,
-                                                        } }}
+                            'multiple_choice' => 'خيار من متعدد',
+                            'essay_question' => 'مقالي',
+                            default => $question->question_type,
+                        } }}
                                                         </span></div>
                                                     <div class="col-md-4"><strong>الدرجة:</strong> {{ $question->mark }} درجات</div>
                                                     <div class="col-md-4 text-muted small">تاريخ الإضافة:
@@ -72,25 +94,7 @@
                                         </div>
                                     </div>
 
-                                    {{-- المودال الخاص بالحذف --}}
-                                    <div class="modal fade" id="deleteModal{{ $question->id }}" tabindex="-1" role="dialog">
-                                        <div class="modal-dialog modal-dialog-centered" role="document">
-                                            <div class="modal-content border-0 shadow" style="border-radius: 15px;">
-                                                <div class="modal-body p-5 text-center">
-                                                    <div class="text-danger mb-4"><i class="fas fa-exclamation-circle fa-4x"></i></div>
-                                                    <h3>تأكيد الحذف</h3>
-                                                    <p class="text-muted">هل أنت متأكد من حذف سؤال ({{ $question->question_text }})؟</p>
-                                                    <div class="d-flex justify-content-center mt-4" style="gap: 10px;">
-                                                        <button type="button" class="btn btn-light px-4" data-dismiss="modal">إلغاء</button>
-                                                        <form action="{{ route('questions.destroy', $question->id) }}" method="POST">
-                                                            @csrf @method('DELETE')
-                                                            <button type="submit" class="btn btn-danger px-4">تأكيد الحذف</button>
-                                                        </form>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+
                     @empty
                         <div class="text-center py-5">
                             <img src="https://cdn-icons-png.flaticon.com/512/7486/7486744.png" width="80"
@@ -99,6 +103,12 @@
                         </div>
                     @endforelse
                 </div>
+                <div class="card-footer bg-white border-0 px-0 d-flex justify-content-between mt-4">
+                        <a href="{{ route('exams.index') }}" class="text-muted"><i class="fas fa-arrow-right ml-1"></i>
+                            العودة للقائمة السابقة
+                        </a>
+                      
+                    </div>
             </div>
 
             @if ($questions->hasPages())
@@ -108,18 +118,27 @@
             @endif
         </div>
     </div>
+    @foreach ($questions as $question)
+        {{-- المودال الخاص بالحذف --}}
+        <div class="modal fade" id="deleteModal{{ $question->id }}" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content border-0 shadow" style="border-radius: 15px;">
+                    <div class="modal-body p-5 text-center">
+                        <div class="text-danger mb-4"><i class="fas fa-exclamation-circle fa-4x"></i></div>
+                        <h3>تأكيد الحذف</h3>
+                        <p class="text-muted">هل أنت متأكد من حذف سؤال ({{ $question->question_text }})؟</p>
+                        <div class="d-flex justify-content-center mt-4" style="gap: 10px;">
+                            <button type="button" class="btn btn-light px-4" data-dismiss="modal">إلغاء</button>
+                            <form action="{{ route('questions.destroy', $question->id) }}" method="POST">
+                                @csrf @method('DELETE')
+                                <button type="submit" class="btn btn-danger px-4">تأكيد الحذف</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endforeach
 
-    <style>
-        .accordion .btn[aria-expanded="true"] i {
-            transform: rotate(180deg);
-        }
 
-        .accordion .btn {
-            transition: all 0.3s;
-        }
-
-        .accordion .btn:hover {
-            background-color: #f8f9fa;
-        }
-    </style>
 @endsection

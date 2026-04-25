@@ -6,13 +6,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\SoftDeletes;
+
 
 
 class Exam extends Model
 
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
     const FINAL = 'نهائي';
     const MIDTREM = 'نصفي';
     protected $fillable = [
@@ -38,5 +38,20 @@ class Exam extends Model
     public function questions(): HasMany
     {
         return $this->hasMany(Question::class);
+    }
+
+    public function attempts(): HasMany
+    {
+        return $this->hasMany(ExamAttempt::class);
+    }
+
+    public function classrooms()
+    {
+        return $this->belongsToMany(
+            Classroom::class,
+            'exam_classrooms',
+            'exam_id',
+            'classroom_id',
+        )->withPivot(['exam_id', 'classroom_id', 'start_time', 'end_time', 'is_published']);
     }
 }

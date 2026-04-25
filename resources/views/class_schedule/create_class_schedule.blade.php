@@ -69,7 +69,7 @@
                             <select name="classroom_id"
                                 class="form-control border-left-0 @error('classroom_id') is-invalid @enderror">
                                 <option value="">اختر الصف</option>
-                                @foreach ($teacher->teacherAssignments as $assignment)
+                                @foreach ($teacher->teacherAssignments->unique('classroom_id') as $assignment)
                                     <option value="{{ $assignment->classroom_id }}">{{ $assignment->classroom->name }}</option>
                                 @endforeach
                             </select>
@@ -83,7 +83,7 @@
 
         <div class="card-footer bg-light py-3 d-flex justify-content-between align-items-center">
             <a href="{{ route('classrooms.index') }}" class="text-muted">
-                <i class="fas fa-arrow-right mr-1"></i> العودة للقائمة
+                <i class="fas fa-arrow-right mr-1"></i> العودة للقائمة السابقة
             </a>
             <button type="submit" class="btn btn-primary px-5 shadow-sm" style="border-radius: 8px;">
                 <i class="fas fa-save ml-2"></i> حفظ

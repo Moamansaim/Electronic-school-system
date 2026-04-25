@@ -5,7 +5,7 @@
     <div class="p-4">
         <x-grade-level-error-component />
         <x-grade-level-success-component />
-        
+
         <div class="card border-0 shadow-sm" style="border-radius: 15px; overflow: hidden;">
             <div class="card-header bg-white border-bottom py-3">
                 <h5 class="mb-0 text-primary font-weight-bold">
@@ -21,21 +21,38 @@
                     <div class="row">
                         <div class="col-md-12 mb-4">
                             <label class="form-label font-weight-bold">نص السؤال</label>
-                            <input type="text" name="question_text" class="form-control" required value="{{ old('question_text') }}">
+                            <input type="text" name="question_text"
+                                class="form-control @error('question_text') is-invalid @enderror" required
+                                value="{{ old('question_text') }}">
+                            @error('question_text')
+                                <small class="text-danger mt-1 d-block">{{ $message }}</small>
+                            @enderror
                         </div>
 
                         <div class="col-md-6 mb-4">
                             <label class="form-label font-weight-bold">نوع السؤال</label>
-                            <select name="question_type" id="question_type" class="form-control">
-                                <option value="essay_question" {{ old('question_type') == 'essay_question' ? 'selected' : '' }}>سؤال مقالي</option>
-                                <option value="multiple_choice" {{ old('question_type') == 'multiple_choice' ? 'selected' : '' }}>اختيار من متعدد (MCQ)</option>
+                            <select name="question_type" id="question_type"
+                                class="form-control @error('question_type') is-invalid @enderror">
+                                <option value=" ">اختر نوع السؤال</option>
+                                <option value="multiple_choice" {{ old('question_type') == 'multiple_choice' ? 'selected' : '' }}>اختيار من متعدد (MCQ)
+                                </option> 
                             </select>
+                            @error('question_type')
+                                <small class="text-danger mt-1 d-block">{{ $message }}</small>
+                            @enderror
                         </div>
 
                         <div class="col-md-6 mb-4">
                             <label class="form-label font-weight-bold">الدرجة</label>
-                            <input type="number" name="mark" class="form-control" required value="{{ old('mark') }}">
+                            <input type="number" name="mark" class="form-control @error('mark') is-invalid @enderror"
+                                required value="{{ old('mark') }}">
+
+                            @error('mark')
+                                <small class="text-danger mt-1 d-block">{{ $message }}</small>
+                            @enderror
+
                         </div>
+
                     </div>
 
                     {{-- قسم الخيارات الديناميكي --}}
@@ -54,8 +71,11 @@
                     </div>
 
                     <div class="card-footer bg-white border-0 px-0 d-flex justify-content-between mt-4">
-                        <a href="{{ route('exams.index') }}" class="text-muted"><i class="fas fa-arrow-right ml-1"></i> العودة</a>
-                        <button type="submit" class="btn btn-primary px-5"><i class="fas fa-save ml-2"></i> حفظ السؤال</button>
+                        <a href="{{ route('exams.index') }}" class="text-muted"><i class="fas fa-arrow-right ml-1"></i>
+                            العودة للقائمة السابقة
+                        </a>
+                        <button type="submit" class="btn btn-primary px-5"><i class="fas fa-save ml-2"></i> حفظ
+                            السؤال</button>
                     </div>
                 </div>
             </form>
@@ -63,51 +83,52 @@
     </div>
 
     @push('script')
-    <script>
-        let optionCount = 0;
+        <script>
+            let optionCount = 0;
 
-        function addOption() {
-            optionCount++;
-            let html = `
-                <div class="row mb-2 option-row align-items-center">
-                    <div class="col-md-10">
-                        <div class="input-group shadow-sm">
-                            <div class="input-group-prepend">
-                                <div class="input-group-text bg-white">
-                                    <input type="radio" name="is_correct" value="${optionCount - 1}" ${optionCount == 1 ? 'checked' : ''}>
-                                </div>
-                            </div>
-                            <input type="text" name="options[]" class="form-control" placeholder="نص الخيار" required>
-                        </div>
-                    </div>
-                    <div class="col-md-2">
-                        <button type="button" class="btn btn-danger btn-sm" onclick="removeOption(this)">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                </div>
-            `;
-            $('#options_container').append(html);
-        }
-
-        function removeOption(btn) {
-            if ($('.option-row').length > 2) {
-                $(btn).closest('.option-row').remove();
-            } else {
-                alert('يجب ألا يقل عدد الخيارات عن خيارين.');
+            function addOption() {
+                optionCount++;
+                let html = `
+                                    <div class="row mb-2 option-row align-items-center">
+                                        <div class="col-md-10">
+                                            <div class="input-group shadow-sm">
+                                                <div class="input-group-prepend">
+                                                    <div class="input-group-text bg-white">
+                                                        <input type="radio" name="is_correct" value="${optionCount - 1}" ${optionCount == 1 ? 'checked' : ''}>
+                                                    </div>
+                                                </div>
+                                                <input type="text" name="options[]" class="form-control" placeholder="نص الخيار" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <button type="button" class="btn btn-danger btn-sm" onclick="removeOption(this)">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                `;
+                $('#options_container').append(html);
             }
-        }
 
-        $('#question_type').on('change', function () {
-            if ($(this).val() === 'multiple_choice') {
-                $('#options_wrapper').slideDown();
-                if ($('.option-row').length === 0) {
-                    addOption(); addOption(); // إضافة خيارين عند البداية
+            function removeOption(btn) {
+                if ($('.option-row').length > 2) {
+                    $(btn).closest('.option-row').remove();
+                } else {
+                    alert('يجب ألا يقل عدد الخيارات عن خيارين.');
                 }
-            } else {
-                $('#options_wrapper').slideUp();
             }
-        });
-    </script>
+
+            $('#question_type').on('change', function () {
+                if ($(this).val() === 'multiple_choice') {
+                    $('#options_wrapper').slideDown();
+                    if ($('.option-row').length === 0) {
+                        addOption();
+                        addOption(); // إضافة خيارين عند البداية
+                    }
+                } else {
+                    $('#options_wrapper').slideUp();
+                }
+            });
+        </script>
     @endpush
 @endsection

@@ -83,21 +83,12 @@ class TeacherController extends Controller
      */
     public function storeAssignment(TeacherAssignmentRequest $teacherAssignmentRequest)
     {
-        try {
+        $teacher_assignment = $teacherAssignmentRequest->validated();
+        TeacherAssignment::create($teacher_assignment);
 
-            $teacher_assignment = $teacherAssignmentRequest->validated();
-
-            TeacherAssignment::create($teacher_assignment);
-
-            return redirect()
-                ->route('teachers.index')
-                ->with('success', 'تمت  تعيين المادة والصف  الدراسي للمعلم بنجاح.');
-        } catch (Exception $e) {
-
-            return back()
-                ->withInput()
-                ->with('error', 'حدث خطأ أثناء حفظ تعيين المادة والصف الدراسي، يرجى المحاولة لاحقًا.');
-        }
+        return redirect()
+            ->route('teachers.index')
+            ->with('success', 'تمت  تعيين المادة والصف  الدراسي للمعلم بنجاح.');
     }
 
     /**
@@ -149,7 +140,7 @@ class TeacherController extends Controller
 
             if ($teacherRequest->has('phone_numbers')) {
                 foreach ($teacherRequest->phone_numbers as $phone) {
-                    $teacher->phoneNumbers()->create([
+                    $teacher->phones()->create([
                         'phone_number' => $phone,
                     ]);
                 }
@@ -200,12 +191,12 @@ class TeacherController extends Controller
 
             $teacher->update($data);
 
-            $teacher->phoneNumbers()->delete();
+            $teacher->phones()->delete();
 
             if ($teacherRequest->has('phone_numbers')) {
                 $phone_numbers = array_unique($teacherRequest->phone_numbers);
                 foreach ($phone_numbers as $phone) {
-                    $teacher->phoneNumbers()->create([
+                    $teacher->phones()->create([
                         'phone_number' => $phone,
                     ]);
                 }
@@ -230,16 +221,10 @@ class TeacherController extends Controller
      */
     public function destroy(Teacher $teacher)
     {
-        try {
-
-            $teacher->delete();
-            $full_name = $teacher->full_name;
-
-            return redirect()->back()->with('success', "تم حذف المعلم ({$full_name}) بنجاح");
-        } catch (Exception $e) {
-            return redirect()->back()
-                ->with('error', 'حدث خطأ أثناء عملية حذف  المعلم يرجى المحاولة لاحقًا.');
-        }
+        $teacher->delete();
+        return redirect()
+            ->back()
+            ->with('success', "تم حذف المعلم ({$teacher->full_name}) بنجاح");
     }
 
     /**
@@ -247,14 +232,11 @@ class TeacherController extends Controller
      */
     public function destroyTeacherAssignment($teacher_assignment_id)
     {
-        try {
-            $teacher_assignment = TeacherAssignment::findOrFail($teacher_assignment_id);
-            $teacher_assignment->delete();
+        $teacher_assignment = TeacherAssignment::findOrFail($teacher_assignment_id);
+        $teacher_assignment->delete();
 
-            return redirect()->back()->with('success', 'تم حذف التعيين  بنجاح');
-        } catch (Exception $e) {
-            return redirect()->back()
-                ->with('error', 'حدث خطأ أثناء عملية حذف  التعيين يرجى المحاولة لاحقًا.');
-        }
+        return redirect()
+            ->back()
+            ->with('success', 'تم حذف التعيين  بنجاح');
     }
 }

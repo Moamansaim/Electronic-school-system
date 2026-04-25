@@ -59,7 +59,7 @@
                 </div>
 
                 <div class="card-footer bg-light py-3 d-flex justify-content-between">
-                    <a href="{{ route('students.index') }}" class="btn btn-link text-muted">العودة للقائمة</a>
+                    <a href="{{ route('students.index') }}" class="btn btn-link text-muted">العودة للقائمة السابقة</a>
                     <button type="submit" class="btn btn-primary px-5 shadow-sm">
                         <i class="fas fa-save ml-2"></i> حفظ التعيين
                     </button>

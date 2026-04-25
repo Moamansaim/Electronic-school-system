@@ -53,4 +53,14 @@ class Classroom extends Model
     {
         return $this->hasMany(ClassSchedule::class, 'classroom_id');
     }
+
+    public function exams()
+    {
+        return $this->belongsToMany(
+            Exam::class,
+            'exam_classrooms',
+            'classroom_id',
+            'exam_id'
+        )->withPivot(['exam_id', 'classroom_id', 'start_time', 'end_time', 'is_published']);
+    }
 }

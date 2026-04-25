@@ -86,7 +86,7 @@
                 </div>
 
                 <div class="card-footer bg-light py-3 d-flex justify-content-between align-items-center">
-                    <a href="{{ route('exams.index') }}" class="text-muted"><i class="fas fa-arrow-right mr-1"></i> العودة للقائمة</a>
+                    <a href="{{ route('exams.index') }}" class="text-muted"><i class="fas fa-arrow-right mr-1"></i> العودة للقائمة السابقة</a>
                     <button type="submit" class="btn btn-success px-5 shadow-sm" style="border-radius: 8px;">
                         <i class="fas fa-sync-alt ml-2"></i> تحديث البيانات 
                     </button>

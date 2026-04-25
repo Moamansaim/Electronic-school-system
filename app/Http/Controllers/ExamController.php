@@ -18,8 +18,7 @@ class ExamController extends Controller
      */
     public function index(): View
     {
-        $exams = Exam::with(['subject', 'teacher'])->paginate(10);
-
+        $exams = Exam::with(['subject', 'teacher', 'classrooms'])->paginate(10);
         return view('exam.index_exam', compact('exams'));
     }
 
@@ -40,18 +39,10 @@ class ExamController extends Controller
      */
     public function store(ExamRequest $examRequest): RedirectResponse
     {
-        try {
-            Exam::create($examRequest->validated());
-
-            return redirect()
-                ->route('exams.index')
-                ->with('success', 'تم إنشاء الإختبار بنجاح');
-        } catch (Exception $e) {
-            return redirect()
-                ->back()
-                ->withInput()
-                ->with('error', 'حدث خطأ أثناء إنشاء الإختبار، يرجى المحاولة لاحقًا.');
-        }
+        Exam::create($examRequest->validated());
+        return redirect()
+            ->route('exams.index')
+            ->with('success', 'تم إنشاء الإختبار بنجاح');
     }
 
     /**
@@ -60,7 +51,6 @@ class ExamController extends Controller
     public function show(Exam $exam): View
     {
         $exam->load('subject');
-
         return view('question.create_question', compact('exam'));
     }
 
@@ -71,7 +61,7 @@ class ExamController extends Controller
     {
         $exam = Exam::findOrFail($id);
         $questions = $exam->questions()->paginate(10);
-        
+
         return view('question.exam_questions', compact('exam', 'questions'));
     }
 
@@ -91,23 +81,15 @@ class ExamController extends Controller
      */
     public function update(ExamRequest $examRequest, Exam $exam): RedirectResponse
     {
-        try {
-            // التحقق من نوع الاختبار؛ إذا كان نهائياً أو نصفي، يتم مسح قيمة الشهر
-            if ($examRequest->exam_type === Exam::FINAL || $examRequest->exam_type === Exam::MIDTREM) {
-                $exam->month = '';
-            }
-            
-            $exam->update($examRequest->validated());
-            
-            return redirect()
-                ->route('exams.index')
-                ->with('success', 'تم تعديل الإختبار بنجاح');
-        } catch (Exception $e) {
-            return redirect()
-                ->back()
-                ->withInput()
-                ->with('error', 'حدث خطأ أثناء تعديل الإختبار، يرجى المحاولة لاحقًا.');
+        // التحقق من نوع الاختبار؛ إذا كان نهائياً أو نصفي، يتم مسح قيمة الشهر
+        if ($examRequest->exam_type === Exam::FINAL || $examRequest->exam_type === Exam::MIDTREM) {
+            $exam->month = '';
         }
+
+        $exam->update($examRequest->validated());
+        return redirect()
+            ->route('exams.index')
+            ->with('success', 'تم تعديل الإختبار بنجاح');
     }
 
     /**
@@ -115,14 +97,14 @@ class ExamController extends Controller
      */
     public function destroy(Exam $exam): RedirectResponse
     {
-        try {
-            $exam->delete();
-
-            return redirect()->back()->with('success', "تم حذف إختبار ({$exam->subject->name}) بنجاح");
-        } catch (Exception $e) {
-            return redirect()
-                ->back()
-                ->with('error', 'حدث خطأ أثناء عملية حذف الإختبار، يرجى المحاولة لاحقًا.');
+        if ($exam->attempts()->exists()) {
+            return redirect()->back()->with('error', 'لا يمكن حذف الاختبار حاليا, لوجود محاولات مسجلة للطلاب. يمكن حذفه فقط بعد ترفيع الطالب للمرحلة التالية ');
         }
+        
+        $exam->delete();
+        
+        return redirect()
+            ->back()
+            ->with('success', "تم حذف إختبار ({$exam->subject->name}) بنجاح");
     }
 }

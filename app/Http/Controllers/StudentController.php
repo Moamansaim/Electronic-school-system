@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\ExamType;
 use App\Http\Requests\StudentRequest;
 use App\Models\ClassSchedule;
 use App\Models\GradeLevel;
@@ -96,7 +97,7 @@ class StudentController extends Controller
 
             if ($studentRequest->has('phone_numbers')) {
                 foreach ($studentRequest->phone_numbers as $phone) {
-                    $student->phoneNumbers()->create([
+                    $student->phones()->create([
                         'phone_number' => $phone,
                     ]);
                 }
@@ -130,7 +131,7 @@ class StudentController extends Controller
      */
     public function show(Student $student): View
     {
-        $student = $student->load(['gradeLevel', 'classroom']);
+        $student = $student->load(['gradeLevel', 'classroom', 'examAttempt']);
 
         $rawSchedules = ClassSchedule::where('class_schedules.classroom_id', $student->classroom_id)
             ->join('teacher_assignments', function ($join) {
@@ -146,6 +147,7 @@ class StudentController extends Controller
                 DB::raw("CONCAT_WS(' ', teachers.first_name, teachers.father_name,teachers.grandfather_name , teachers.family_name) as teacher_full_name")
             )
             ->get();
+
 
         $schedules = [];
         foreach ($rawSchedules as $item) {
@@ -179,12 +181,12 @@ class StudentController extends Controller
 
             $student->update($data);
 
-            $student->phoneNumbers()->delete();
+            $student->phones()->delete();
 
             if ($studentRequest->has('phone_numbers')) {
                 $phone_numbers = array_unique($studentRequest->phone_numbers);
                 foreach ($phone_numbers as $phone) {
-                    $student->phoneNumbers()->create([
+                    $student->phones()->create([
                         'phone_number' => $phone,
                     ]);
                 }
@@ -194,10 +196,9 @@ class StudentController extends Controller
 
             DB::commit();
 
-            $full_name = $student->first_name . $student->father_name . ' ' . ' ' . $student->family_name;
 
             return redirect()->route('students.index')
-                ->with('success', "تم تحديث بيانات الطالب ({$full_name}) بنجاح");
+                ->with('success', "تم تحديث بيانات الطالب ({$student->full_name}) بنجاح");
         } catch (Exception $e) {
             DB::rollBack();
 
@@ -211,16 +212,10 @@ class StudentController extends Controller
      */
     public function destroy(Student $student): RedirectResponse
     {
-        try {
-
-            $student->delete();
-            $full_name = $student->first_name . ' ' . $student->family_name;
-
-            return redirect()->back()->with('success', "تم حذف الطالب ({$full_name}) بنجاح");
-        } catch (Exception $e) {
-            return redirect()->back()
-                ->with('error', 'حدث خطأ أثناء عملية حذف  الطالب يرجى المحاولة لاحقًا.');
-        }
+        $student->delete();
+        return redirect()
+            ->back()
+            ->with('success', "تم حذف الطالب ({$student->full_name}) بنجاح");
     }
 
     /**
@@ -229,5 +224,31 @@ class StudentController extends Controller
     private function getGradeLevels()
     {
         return GradeLevel::select('id', 'name')->orderBy('name')->get();
+    }
+
+
+    public function showStudentSchedule()
+    {
+        // 1. جلب الطالب المسجل حالياً مع صفّه
+        $student = auth()->user()->student()->with('classroom')->first();
+
+        if (!$student || !$student->classroom) {
+            return redirect()->back()->with('error', 'الطالب غير مسجل في أي صف حالياً.');
+        }
+
+        // 2. جلب جدول الحصص لهذا الصف
+        // سنستخدم eager loading لجلب بيانات المعلم، ومن ثم التعيينات (Assignments) 
+        // لنعرف المادة التي يدرسها هذا المعلم في هذا الصف
+        $schedules = ClassSchedule::where('classroom_id', $student->classroom_id)
+            ->with(['teacher.teacherAssignments' => function ($query) use ($student) {
+                $query->where('classroom_id', $student->classroom_id);
+            }, 'teacher.teacherAssignments.subject'])
+            ->get();
+
+
+        // 4. تجميع الحصص حسب اليوم
+        $groupedSchedule = $schedules->groupBy('day');
+
+        return view('student.class_schedule', compact('groupedSchedule',  'student'));
     }
 }

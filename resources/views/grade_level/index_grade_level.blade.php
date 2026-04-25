@@ -30,8 +30,7 @@
                                 </div>
                             </form>
 
-                            <a href="{{ route('classrooms.index') }}"
-                                class="btn btn-secondary shadow-sm px-3 rounded-pill">
+                            <a href="{{ route('classrooms.index') }}" class="btn btn-secondary shadow-sm px-3 rounded-pill">
                                 <i class="fas fa-door-open ml-1"></i> عرض الصفوف
                             </a>
 
@@ -87,45 +86,14 @@
                                                 <span>تعديل</span>
                                             </a>
 
-                                            <button class="btn btn-sm btn-danger d-flex align-items-center"
-                                                data-toggle="modal" data-target="#deleteModal{{ $grade_level->id }}"
-                                                title="حذف">
+                                            <button class="btn btn-sm btn-danger d-flex align-items-center" data-toggle="modal"
+                                                data-target="#deleteModal{{ $grade_level->id }}" title="حذف">
                                                 <i class="fas fa-trash-alt mr-1"></i>
                                                 <span>حذف</span>
                                             </button>
                                         </div>
 
-                                        {{-- مودل الحذف --}}
-                                        <div class="modal fade" id="deleteModal{{ $grade_level->id }}" tabindex="-1"
-                                            role="dialog">
-                                            <div class="modal-dialog modal-dialog-centered" role="document">
-                                                <div class="modal-content border-0 shadow" style="border-radius: 15px;">
-                                                    <div class="modal-body p-5 ">
-                                                        <div class="text-danger mb-4">
-                                                            <i class="fas fa-exclamation-circle fa-4x"></i>
-                                                        </div>
-                                                        <h3 class="font-weight-bold">تأكيد الحذف</h3>
-                                                        <p class="text-muted">هل أنت متأكد من حذف مرحلة
-                                                            <strong>({{ $grade_level->name }})</strong>؟<br>سيؤدي هذا لحذف
-                                                            كافة البيانات المرتبطة بها.
-                                                        </p>
-                                                        <div class="d-flex justify-content-center mt-4" style="gap: 10px;">
-                                                            <button type="button"
-                                                                class="btn btn-light px-4 rounded-pill shadow-sm font-weight-bold"
-                                                                data-dismiss="modal">إلغاء</button>
-                                                            <form
-                                                                action="{{ route('grade_levels.destroy', $grade_level->id) }}"
-                                                                method="POST">
-                                                                @csrf @method('DELETE')
-                                                                <button type="submit"
-                                                                    class="btn btn-danger px-4 rounded-pill shadow-sm font-weight-bold">تأكيد
-                                                                    الحذف</button>
-                                                            </form>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
+
                                     </td>
                                 </tr>
                             @empty
@@ -149,6 +117,35 @@
             @endif
         </div>
     </div>
+
+      @foreach ($grade_levels as $grade_level)
+        {{-- مودل الحذف --}}
+        <div class="modal fade text-center" id="deleteModal{{ $grade_level->id }}" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content border-0 shadow" style="border-radius: 15px;">
+                    <div class="modal-body p-5 ">
+                        <div class="text-danger mb-4">
+                            <i class="fas fa-exclamation-circle fa-4x"></i>
+                        </div>
+                        <h3 class="font-weight-bold">تأكيد الحذف</h3>
+                        <p class="text-muted">هل أنت متأكد من حذف مرحلة
+                            <strong>({{ $grade_level->name }})</strong>؟<br>سيؤدي هذا لحذف
+                            كافة البيانات المرتبطة بها.
+                        </p>
+                        <div class="d-flex justify-content-center mt-4" style="gap: 10px;">
+                            <button type="button" class="btn btn-light px-4 rounded-pill shadow-sm font-weight-bold"
+                                data-dismiss="modal">إلغاء</button>
+                            <form action="{{ route('grade_levels.destroy', $grade_level->id) }}" method="POST">
+                                @csrf @method('DELETE')
+                                <button type="submit" class="btn btn-danger px-4 rounded-pill shadow-sm font-weight-bold">تأكيد
+                                    الحذف</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endforeach
 
     <style>
         /* محاذاة عامة للجدول */
@@ -185,4 +182,7 @@
             gap: 0.5rem;
         }
     </style>
+
+
+  
 @endsection

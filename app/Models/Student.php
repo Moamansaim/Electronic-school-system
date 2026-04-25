@@ -82,6 +82,11 @@ class Student extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function examAttempt(): HasMany
+    {
+        return $this->hasMany(ExamAttempt::class);
+    }
+
     public function getFullNameAttribute(): string
     {
         return "{$this->first_name} {$this->father_name} {$this->grandfather_name} {$this->family_name}";

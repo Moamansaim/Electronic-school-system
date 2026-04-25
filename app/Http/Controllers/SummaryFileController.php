@@ -22,7 +22,7 @@ class SummaryFileController extends Controller
             'user_id'    => 'required|exists:users,id',
             'subject_id' => 'required|exists:subjects,id',
             'files'      => 'required|array',
-            'files.*'    => 'file|mimes:pdf,jpg,png,docx|max:10240',
+            'files.*'    => 'file|mimes:pdf,jpg,png|max:10240', //حجم أقصى 10 ميجا بايت
         ], [
             // رسائل الخطأ المخصصة بالعربية
             'user_id.required'    => 'معرف المستخدم مطلوب.',
@@ -52,6 +52,7 @@ class SummaryFileController extends Controller
 
                 // حفظ بيانات الملف في قاعدة البيانات
                 $savedFile = SummaryFile::create([
+                    'summary_content_file' => $request->summary_content_file,
                     'user_id'    => $request->user_id,
                     'subject_id' => $request->subject_id,
                     'file_path'  => $path, // المسار الناتج من التخزين
