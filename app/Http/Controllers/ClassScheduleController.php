@@ -35,18 +35,13 @@ class ClassScheduleController extends Controller
      */
     public function store(ClassScheduleRequest $classScheduleRequest): RedirectResponse
     {
-        try {
+    
             ModelsClassSchedule::create($classScheduleRequest->validated());
 
             return redirect()
                 ->back()
                 ->with('success', 'تمت إضافة الحصة الدراسية بنجاح.');
-        } catch (Exception $e) {
-            return redirect()
-                ->back()
-                ->withInput()
-                ->with('error', 'حدث خطأ أثناء حفظ الحصة الدراسية يرجى المحاولة لاحقًا.');
-        }
+        
     }
 
     /**
@@ -88,7 +83,7 @@ class ClassScheduleController extends Controller
      */
     public function update(ClassScheduleRequest $classScheduleRequest, ModelsClassSchedule $classSchedule): RedirectResponse
     {
-        try {
+        
             $classSchedule->update($classScheduleRequest->validated());
 
             $teacher_id = $classSchedule->teacher_id;
@@ -99,28 +94,19 @@ class ClassScheduleController extends Controller
                     'teacher_id' => $teacher_id,
                 ])
                 ->with('success', 'تمت تعديل الحصة الدراسية بنجاح.');
-        } catch (Exception $e) {
-            return redirect()
-                ->back()
-                ->withInput()
-                ->with('error', 'حدث خطأ أثناء تعديل الحصة الدراسية يرجى المحاولة لاحقًا.');
-        }
-    }
+        } 
+
 
     /**
      * حذف حصة دراسية من النظام.
      */
     public function destroy(ModelsClassSchedule $classSchedule): RedirectResponse
     {
-        try {
+        
             $classSchedule->delete();
 
             return redirect()->back()->with('success', 'تمت عملية الحذف بنجاح');
-        } catch (Exception $e) {
-            return redirect()
-                ->back()
-                ->with('error', 'حدث خطأ أثناء عملية حذف الحصة الدراسية يرجى المحاولة لاحقًا.');
-        }
+        
     }
 
     /**
