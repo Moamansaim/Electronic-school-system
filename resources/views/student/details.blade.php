@@ -3,6 +3,7 @@
 
 @section('content')
     <div class="container-fluid p-4" dir="rtl">
+        {{-- Header Section --}}
         <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap no-print">
             <div>
                 <h4 class="font-weight-bold text-secondary mb-0">بطاقة الطالب الأكاديمية</h4>
@@ -18,32 +19,32 @@
         </div>
 
         <div class="row">
+            {{-- Sidebar: Student Info --}}
             <div class="col-xl-3 col-lg-4">
                 <div class="card border-0 shadow-sm mb-4" style="border-radius: 20px;">
                     <div class="card-header border-0 pb-0 pt-4 bg-white text-center">
-                        <div class="avatar-container position-relative">
-                            <div class="rounded-circle mx-auto d-flex align-items-center justify-content-center shadow-sm"
-                                style="background: linear-gradient(135deg, #4e73df, #224abe); color: #fff; width: 100px; height: 100px; font-size: 2.5rem;">
-                                {{ mb_substr($student->first_name, 0, 1) }}
-                            </div>
+                        <div class="rounded-circle mx-auto d-flex align-items-center justify-content-center shadow-sm"
+                            style="background: linear-gradient(135deg, #4e73df, #224abe); color: #fff; width: 100px; height: 100px; font-size: 2.5rem;">
+                            {{ mb_substr($student->first_name, 0, 1) }}
                         </div>
                         <h5 class="font-weight-bold mt-3 mb-1 text-dark">{{ $student->full_name }}</h5>
-                        <h6 class="text-muted">رقم الطالب: {{ $student->user->school_id ?? '---' }}</h6>
+                        <h6 class="text-muted small">رقم الطالب: {{ $student->user->school_id ?? '---' }}</h6>
                     </div>
                     <div class="card-body">
                         <div class="info-list">
-                            <div class="d-flex align-items-center mb-3 ">
+                            <div class="d-flex align-items-center mb-3 text-right">
                                 <div class="icon-box-sm bg-soft-info ml-3">
                                     <i class="fas fa-id-card text-info"></i>
                                 </div>
-                                <div class="ml-2">
+                                <div>
                                     <small class="text-muted d-block">الهوية الوطنية</small>
                                     <span class="font-weight-bold small">{{ $student->national_id }}</span>
                                 </div>
                             </div>
                             <div class="mt-4 p-3 rounded bg-light">
-                                <h6 class="small font-weight-bold text-primary mb-2"><i class="fas fa-shield-alt ml-1"></i>
-                                    الحالة الأكاديمية</h6>
+                                <h6 class="small font-weight-bold text-primary mb-2 text-right">
+                                    <i class="fas fa-shield-alt ml-1"></i> الحالة الأكاديمية
+                                </h6>
                                 <div class="d-flex justify-content-between mb-1">
                                     <span class="small text-muted">المرحلة:</span>
                                     <span
@@ -55,18 +56,15 @@
                                         class="small font-weight-bold text-success">{{ $student->classroom->name ?? 'غير محدد' }}</span>
                                 </div>
                             </div>
-                            <button type="button" class="btn btn-warning btn-block mt-4 rounded-pill" data-toggle="modal"
-                                data-target="#resetPasswordModal">
-                                <i class="fas fa-key ml-1"></i> إعادة تعيين كلمة المرور
-                            </button>
                         </div>
                     </div>
                 </div>
             </div>
 
+            {{-- Main Content: Tabs --}}
             <div class="col-xl-9 col-lg-8">
                 <div class="card border-0 shadow-sm mb-4" style="border-radius: 20px;">
-                    <div class="card-body p-4">
+                    <div class="card-body p-4 text-right">
                         <ul class="nav nav-pills mb-4 bg-light p-1 rounded-pill no-print" id="studentTab" role="tablist"
                             style="width: fit-content;">
                             <li class="nav-item">
@@ -74,18 +72,20 @@
                                     href="#grades">سجل الدرجات</a>
                             </li>
                             <li class="nav-item">
+                                <a class="nav-link rounded-pill px-4" id="attendance-tab" data-toggle="tab"
+                                    href="#attendance">سجل الحضور</a>
+                            </li>
+                            <li class="nav-item">
                                 <a class="nav-link rounded-pill px-4" id="schedule-tab" data-toggle="tab"
                                     href="#schedule">الجدول الدراسي</a>
                             </li>
                         </ul>
 
-                        <div class="tab-content" id="studentTabContent">
+                        <div class="tab-content text-right" id="studentTabContent">
+                            {{-- Tab 1: Grades --}}
                             <div class="tab-pane fade show active" id="grades">
                                 <div class="row">
                                     @forelse($student->examAttempt as $attempt)
-                                        @php
-                                            $exam = $attempt->exam;
-                                        @endphp
                                         <div class="col-md-6 mb-4">
                                             <div class="card h-100 border-0 shadow-sm grade-card"
                                                 style="border-right: 5px solid #4e73df;">
@@ -93,88 +93,97 @@
                                                     <div class="d-flex justify-content-between align-items-start mb-3">
                                                         <div class="badge-marks p-2 rounded text-center"
                                                             style="background: #f8f9fc; min-width: 80px;">
-
-                                                            <small class="text-muted">من {{ $exam->total_marks }}</small>
+                                                            <div class="font-weight-bold text-primary">
+                                                                {{ $attempt->final_score }}</div>
+                                                            <small class="text-muted">من
+                                                                {{ $attempt->exam->total_marks }}</small>
                                                         </div>
-                                                        <div class="text-left text-md-right">
-
-                                                            <div class="text-left text-md-right">
-                                                                {{-- المقارنة مباشرة مع حالات الـ Enum --}}
-                                                                
-                                                                    @if ($exam->exam_type === \App\Enums\ExamType::Monthly->value)
-                                                                        <span class="badge badge-pill badge-primary px-3">اختبار
-                                                                            شهري</span>
-                                                                    @elseif($exam->exam_type === \App\Enums\ExamType::Midterm->value)
-                                                                        <span
-                                                                            class="badge badge-pill badge-info px-3 text-white">اختبار
-                                                                            نصفي</span>
-                                                                    @elseif($exam->exam_type === \App\Enums\ExamType::Final->value)
-                                                                        <span class="badge badge-pill badge-success px-3">اختبار
-                                                                            نهائي</span>
-                                                                    @endif
-                                                                
-                                                                {{-- إظهار الشهر فقط في حال كان الاختبار شهرياً --}}
-                                                                @if ($exam->exam_type === \App\Enums\ExamType::Monthly->value && $exam->month)
-                                                                    <div class="small text-muted mt-1">
-                                                                        <i class="far fa-calendar-alt ml-1"></i> شهر:
-                                                                        {{ $exam->month }}
-                                                                    </div>
-                                                                @endif
-                                                            </div>
-
-                                                        </div>
+                                                        <span
+                                                            class="badge badge-pill badge-primary px-3">{{ $attempt->exam->exam_type }}</span>
                                                     </div>
-
-                                                    <h6 class="font-weight-bold text-dark mb-1">{{ $exam->subject->name }}
-                                                    </h6>
-
-                                                    <div class="d-flex justify-content-between">
-                                                        <span class="text-muted text-bold"> علامة الطالب
-                                                            :{{ $attempt->final_score }}</span>
-
-                                                    </div>
+                                                    <h6 class="font-weight-bold text-dark mb-1">
+                                                        {{ $attempt->exam->subject->name }}</h6>
+                                                    <small class="text-muted">التاريخ:
+                                                        {{ $attempt->created_at->format('Y-m-d') }}</small>
                                                 </div>
                                             </div>
                                         </div>
                                     @empty
                                         <div class="col-12 text-center py-5">
-                                            <p class="text-muted">لا توجد درجات مسجلة لهذا الطالب.</p>
+                                            <p class="text-muted">لا توجد درجات مسجلة.</p>
                                         </div>
                                     @endforelse
                                 </div>
                             </div>
 
-                            <div class="tab-pane fade" id="schedule">
+                            {{-- Tab 2: Attendance with JS Pagination --}}
+                            <div class="tab-pane fade" id="attendance">
                                 <div class="d-flex justify-content-between align-items-center mb-4">
-                                    <h6 class="section-title mb-0"><i class="fas fa-calendar-alt ml-2"></i> جدول الحصص
-                                        الأسبوعي</h6>
+                                    <h6 class="section-title mb-0"><i class="fas fa-calendar-check ml-2"></i> سجل الحضور
+                                        والغياب</h6>
                                 </div>
                                 <div class="table-responsive shadow-sm rounded border">
-                                    <table class="table table-bordered mb-0 text-center schedule-table">
-                                        <thead>
-                                            <tr class="bg-primary text-white">
-                                                <th class="align-middle" style="width: 120px;">اليوم / الحصة</th>
+                                    <table class="table table-hover mb-0 text-center" id="attendanceTable">
+                                        <thead class="bg-light">
+                                            <tr>
+                                                <th class="py-3">التاريخ</th>
+                                                <th class="py-3">اليوم</th>
+                                                <th class="py-3">الحالة</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="attendanceBody">
+                                            @forelse($student->attendance as $record)
+                                                <tr class="attendance-row">
+                                                    <td class="align-middle font-weight-bold">
+                                                        {{ $record->attendance_date->format('Y-m-d') }}</td>
+                                                    <td class="align-middle text-muted">
+                                                        {{ $record->attendance_date->translatedFormat('l') }}</td>
+                                                    <td class="align-middle">
+                                                        <span
+                                                            class="badge px-3 py-2 rounded-pill font-weight-bold status-{{ $record->status }}">
+                                                            {{ $record->status_lable }}
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                            @empty
+                                                <tr>
+                                                    <td colspan="3" class="py-5 text-muted">لا يوجد سجلات حضور.</td>
+                                                </tr>
+                                            @endforelse
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                {{-- JS Pagination Controls --}}
+                                <nav class="mt-4 no-print">
+                                    <ul class="pagination justify-content-center" id="paginationControls"></ul>
+                                </nav>
+                            </div>
+
+                            {{-- Tab 3: Schedule --}}
+                            <div class="tab-pane fade" id="schedule">
+                                <div class="table-responsive shadow-sm rounded border text-center">
+                                    <table class="table table-bordered mb-0">
+                                        <thead class="bg-primary text-white">
+                                            <tr>
+                                                <th>اليوم / الحصة</th>
                                                 @foreach ($periods as $period)
-                                                    <th class="py-3 small font-weight-bold">{{ $period }}</th>
+                                                    <th>{{ $period }}</th>
                                                 @endforeach
                                             </tr>
                                         </thead>
                                         <tbody>
                                             @foreach ($days as $day)
                                                 <tr>
-                                                    <td class="bg-light align-middle font-weight-bold text-dark small">
-                                                        {{ $day }}
-                                                    </td>
+                                                    <td class="bg-light font-weight-bold">{{ $day }}</td>
                                                     @foreach ($periods as $period)
-                                                        <td class="p-2 align-middle" style="min-width: 130px; height: 100px;">
+                                                        <td class="p-2" style="min-width: 130px; height: 100px;">
                                                             @if (isset($schedules[$day][$period]))
                                                                 <div class="schedule-entry shadow-sm">
                                                                     <div class="subj-name">
-                                                                        {{ $schedules[$day][$period]->subject_name }}
-                                                                    </div>
-                                                                    <div class="teach-name text-muted mt-1">
-                                                                        <i
-                                                                            class="fas fa-user-tie ml-1 small"></i>{{ $schedules[$day][$period]->teacher_full_name }}
+                                                                        {{ $schedules[$day][$period]->subject_name }}</div>
+                                                                    <div class="teach-name text-muted mt-1 small">
+                                                                        {{ $schedules[$day][$period]->teacher_full_name }}
                                                                     </div>
                                                                 </div>
                                                             @endif
@@ -188,32 +197,6 @@
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="resetPasswordModal" tabindex="-1" role="dialog" aria-hidden="true" dir="rtl">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header border-0">
-                    <h5 class="modal-title font-weight-bold text-danger">إعادة تعيين كلمة المرور</h5>
-                    <button type="button" class="close ml-0" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body text-center py-4">
-                    <i class="fas fa-exclamation-triangle text-warning fa-3x mb-3"></i>
-                    <p>هل أنت متأكد من رغبتك في إعادة تعيين كلمة مرور الطالب:</p>
-                    <h5 class="text-primary font-weight-bold my-3">{{ $student->full_name }}</h5>
-                    <p class="text-muted small">سيتم إعادة تعيينها إلى كلمة المرور الافتراضية للنظام.</p>
-                </div>
-                <div class="modal-footer border-0 justify-content-center">
-                    <button type="button" class="btn btn-secondary px-4" data-dismiss="modal">إلغاء</button>
-                    <form action="" method="POST">
-                        @csrf
-                        <button type="submit" class="btn btn-danger px-4">تأكيد التعيين</button>
-                    </form>
                 </div>
             </div>
         </div>
@@ -242,11 +225,31 @@
             font-weight: 700;
             color: #858796;
             text-transform: uppercase;
-            display: block;
         }
 
-        .border-right-bold {
-            border-right: 4px solid var(--primary-color);
+        /* Status Badges */
+        .status-present {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #c8e6c9;
+        }
+
+        .status-absent {
+            background-color: #ffebee;
+            color: #c62828;
+            border: 1px solid #ffcdd2;
+        }
+
+        .status-late {
+            background-color: #fff3e0;
+            color: #ef6c00;
+            border: 1px solid #ffe0b2;
+        }
+
+        .status-excused {
+            background-color: #e1f5fe;
+            color: #0277bd;
+            border: 1px solid #b3e5fc;
         }
 
         .schedule-entry {
@@ -278,4 +281,55 @@
             }
         }
     </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const rowsPerPage = 10; // عدد السجلات في كل صفحة
+            const tableBody = document.getElementById('attendanceBody');
+            const rows = Array.from(tableBody.getElementsByClassName('attendance-row'));
+            const paginationContainer = document.getElementById('paginationControls');
+            let currentPage = 1;
+
+            function displayPage(page) {
+                const start = (page - 1) * rowsPerPage;
+                const end = start + rowsPerPage;
+
+                rows.forEach((row, index) => {
+                    row.style.display = (index >= start && index < end) ? '' : 'none';
+                });
+
+                updatePaginationButtons(page);
+            }
+
+            function updatePaginationButtons(activePage) {
+                const pageCount = Math.ceil(rows.length / rowsPerPage);
+                paginationContainer.innerHTML = '';
+
+                if (pageCount <= 1) return; // لا حاجة للأزرار إذا كانت صفحة واحدة
+
+                for (let i = 1; i <= pageCount; i++) {
+                    const li = document.createElement('li');
+                    li.className = `page-item ${i === activePage ? 'active' : ''}`;
+
+                    const a = document.createElement('a');
+                    a.className = 'page-link rounded-circle mx-1 shadow-sm';
+                    a.href = '#';
+                    a.innerText = i;
+
+                    a.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        currentPage = i;
+                        displayPage(i);
+                    });
+
+                    li.appendChild(a);
+                    paginationContainer.appendChild(li);
+                }
+            }
+
+            if (rows.length > 0) {
+                displayPage(1);
+            }
+        });
+    </script>
 @endsection

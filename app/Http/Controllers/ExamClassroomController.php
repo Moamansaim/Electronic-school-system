@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\StatusExam;
+use App\Events\ExamPublished;
 use App\Models\Exam;
 use App\Models\ExamAttempt;
 use App\Models\Student;
@@ -58,13 +59,19 @@ class ExamClassroomController extends Controller
             // 5. الحفظ والمزامنة
             $exam->classrooms()->sync($publish_data);
 
+            event(new ExamPublished($exam));
+
             return redirect()->back()->with('success', 'تمت عملية نشر الاختبار للفصول المختارة بنجاح.');
         } catch (\Illuminate\Validation\ValidationException $e) {
             // في حال فشل الفلديشن، نرجع الأخطاء للمودال
-            return redirect()->back()->withErrors($e->errors())->withInput();
+            return redirect()
+                ->back()
+                ->withErrors($e->errors())
+                ->withInput();
         } catch (\Exception $e) {
             // في حال حدوث خطأ تقني (مثل مشكلة العمود المفقود في قاعدة البيانات)
-            return redirect()->back()
+            return redirect()
+                ->back()
                 ->with('error', 'عذراً، حدث خطأ أثناء النشر: ' . $e->getMessage())
                 ->withInput();
         }
@@ -80,12 +87,14 @@ class ExamClassroomController extends Controller
         return redirect()->back()->with('success', 'تم إيقاف النشر لجميع الصفوف بنجاح');
     }
 
+    //دالة جلب الصفوف المنشورة لها الاختبار
     public function showExamClassrooms($id)
     {
         $exam = Exam::with('classrooms')->findOrFail($id);
         return view('exam.exam_classroom', compact('exam'));
     }
 
+    //دالة جلب طلاب الصفوف المنشورة لها الاختبار مع بيانات جلسة الاختبار الخاصة بكل طالب
     public function monitorExamStudent($exam_id, $classroom_id)
     {
         $students = Student::where('classroom_id', $classroom_id)
@@ -98,26 +107,25 @@ class ExamClassroomController extends Controller
     }
 
     //دالة تعديل علامة الطالب
-    public function updateScore(Request $request) 
-{
-    $request->validate([
-        'attempt_id' => 'required|exists:exam_attempts,id',
-        'score' => 'required|numeric|min:0',
-    ]);
+    public function updateScore(Request $request)
+    {
+        $request->validate([
+            'attempt_id' => 'required|exists:exam_attempts,id',
+            'score' => 'required|numeric|min:0',
+        ]);
 
-    $attempt = ExamAttempt::with('exam')->findOrFail($request->attempt_id);
-    
-    // التحقق من النطاق برمجياً
-    if ($request->score > $attempt->exam->total_marks) {
-        return response()->json([
-            'success' => false, 
-            'message' => 'الدرجة لا يمكن أن تتجاوز الدرجة الكلية للاختبار (' . $attempt->exam->total_marks . ')'
-        ], 422);
+        $attempt = ExamAttempt::with('exam')->findOrFail($request->attempt_id);
+
+        // التحقق من النطاق برمجياً
+        if ($request->score > $attempt->exam->total_marks) {
+            return response()->json([
+                'error' => false,
+            ], 422);
+        }
+
+        $attempt->final_score = $request->score;
+        $attempt->save();
+
+        return response()->json(['success' => true]);
     }
-
-    $attempt->final_score = $request->score;
-    $attempt->save();
-
-    return response()->json(['success' => true]);
-}
 }

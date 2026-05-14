@@ -77,7 +77,6 @@
                     </div>
                 </div>
 
-               <textarea name="description" id="editor">{{ old('description') }}</textarea>
 
                 <div class="row" id="month_wrapper"></div>
             </div>

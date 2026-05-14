@@ -81,4 +81,9 @@ class Subject extends Model
     {
         return $this->hasMany(SummaryFile::class, 'subject_id');
     }
+
+    public function dataExamSchedule()
+    {
+        return $this->hasOne(DataExamSchedule::class);
+    }
 }

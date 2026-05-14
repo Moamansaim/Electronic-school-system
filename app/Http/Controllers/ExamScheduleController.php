@@ -2,24 +2,25 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Subject;
-use App\Models\ExamSchedule;
-use Illuminate\Http\Request;
 use App\Http\Requests\StoreExamScheduleRequest;
+use App\Models\ExamSchedule;
+use App\Models\Subject;
+
 
 class ExamScheduleController extends Controller
 {
-    // عرض كافة الجداول
+    //  عرض كافة الجداول
     public function index()
     {
-        $schedules = ExamSchedule::with('subject')->orderBy('exam_date', 'asc')->get();
+        $schedules = ExamSchedule::with('dataExamSchedules')->first();
         return view('exam.index_exam_schedule', compact('schedules'));
     }
 
     public function create()
     {
-        $subjects = Subject::all();
-        return view('exam.create_exam_schedule', compact('subjects'));
+        $subjects = Subject::select('id', 'name')->get();
+        $exam_schedule_title = ExamSchedule::select('id', 'schedule_title')->first();
+        return view('exam.create_exam_schedule', compact('subjects', 'exam_schedule_title'));
     }
 
     /**
@@ -27,17 +28,16 @@ class ExamScheduleController extends Controller
      */
     public function store(StoreExamScheduleRequest $request)
     {
-        // البيانات هنا تكون قد مرت بالفعل عبر التحقق
-        // نقوم بجلب البيانات المفلترة فقط باستخدام $request->validated()
         ExamSchedule::create($request->validated());
-
-        return redirect()->back()->with('success', 'تم نشر جدول الامتحان بنجاح');
+        return redirect()
+            ->back()
+            ->with('success', 'تم إضافة  جدول الاختبارات بنجاح');
     }
 
     // صفحة التعديل
     public function edit(ExamSchedule $examSchedule)
     {
-        $subjects = Subject::all();
+        $subjects = Subject::select('id', 'name')->get();
         return view('exam.edit_exam_schedule', compact('examSchedule', 'subjects'));
     }
 
@@ -45,8 +45,7 @@ class ExamScheduleController extends Controller
     public function update(StoreExamScheduleRequest $request, ExamSchedule $examSchedule)
     {
         $examSchedule->update($request->validated());
-        return redirect()->route('exam.index_exam_schedule')
-            ->with('success', 'تم تحديث الجدول بنجاح');
+        return response()->json(['success' => true]);
     }
 
     // دالة الحذف
@@ -55,6 +54,6 @@ class ExamScheduleController extends Controller
         $examSchedule->delete();
         return redirect()
             ->back()
-            ->with('success', 'تم حذف الموعد من الجدول بنجاح');
+            ->with('success', 'تم حذف  جدول الاختبارات  بنجاح');
     }
 }

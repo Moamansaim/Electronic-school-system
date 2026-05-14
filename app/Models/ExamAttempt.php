@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use Attribute;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Casts\Attribute as CastsAttribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -18,9 +20,18 @@ class ExamAttempt extends Model
         'final_score'
     ];
 
-    public function teacher(): BelongsTo
+    protected $casts = [
+        'final_score' => 'float'
+    ];
+
+    // public function teacher(): BelongsTo
+    // {
+    //     return $this->belongsTo(Exam::class);
+    // }
+
+    public function student(): BelongsTo
     {
-        return $this->belongsTo(Exam::class);
+        return $this->belongsTo(Student::class);
     }
 
     public function exam(): BelongsTo

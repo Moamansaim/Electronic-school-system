@@ -65,18 +65,70 @@
             background-color: #f8fafc;
         }
 
-        .breadcrumb {
-            background: transparent;
-            padding: 0;
-            margin-bottom: 1rem;
+        /* تنسيقات الإشعارات */
+        .notification-badge {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            padding: 2px 5px;
+            border-radius: 50%;
+            background: #ff3e1d;
+            color: white;
+            font-size: 9px;
+            font-weight: bold;
+            border: 1px solid #fff;
         }
 
-        .loader-wrapper {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            display: none;
+        .notification-dropdown {
+            width: 320px;
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.15);
+            padding: 0;
+        }
+
+        .notification-header {
+            padding: 12px 15px;
+            border-bottom: 1px solid #f0f0f0;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .notification-list {
+            max-height: 350px;
+            overflow-y: auto;
+        }
+
+        .notification-item {
+            padding: 12px 15px;
+            border-bottom: 1px solid #f8f9fa;
+            transition: background 0.3s;
+            display: flex;
+            align-items: center;
+            text-decoration: none !important;
+            color: #333 !important;
+        }
+
+        .notification-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .notification-item.unread {
+            background-color: #f0f7ff;
+        }
+
+        .icon-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #e7e7ff;
+            color: #696cff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 12px;
         }
     </style>
 </head>
@@ -84,6 +136,7 @@
 <body class="hold-transition sidebar-mini layout-fixed">
     <div class="wrapper">
 
+        <!-- Navbar -->
         <nav class="main-header navbar navbar-expand navbar-white navbar-light py-3">
             <ul class="navbar-nav">
                 <li class="nav-item">
@@ -94,7 +147,52 @@
                 </li>
             </ul>
 
-            <ul class="navbar-nav ml-auto">
+            <ul class="navbar-nav ml-auto align-items-center">
+                <!-- جرس الإشعارات -->
+                <li class="nav-item dropdown px-2">
+                    <a class="nav-link position-relative" href="#" data-toggle="dropdown">
+                        <i class="far fa-bell" style="font-size: 1.2rem;"></i>
+                        @if(auth()->check() && auth()->user()->unreadNotifications->count() > 0)
+                            <span class="notification-badge">{{ auth()->user()->unreadNotifications->count() }}</span>
+                        @endif
+                    </a>
+
+                    <div class="dropdown-menu dropdown-menu-right notification-dropdown">
+                        <div class="notification-header text-right">
+                            <span>الإشعارات</span>
+                            <a href="#" class="small text-primary">تحديد الكل كمقروء</a>
+                        </div>
+
+                        <div class="notification-list text-right">
+                            @if(auth()->check())
+                                @forelse(auth()->user()->unreadNotifications as $notification)
+                                    <a href="{{ route('notifications.read', $notification->id) }}" class="notification-item unread">
+                                        <div class="icon-circle">
+                                            <i class="fas fa-envelope-open-text"></i>
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <h6 class="mb-1" style="font-size: 13px; font-weight: bold;">{{ $notification->data['title'] }}</h6>
+                                            <small class="text-muted d-block" style="font-size: 12px;">{{ $notification->data['body'] }}</small>
+                                            <small class="text-primary mt-1 d-block" style="font-size: 10px;">
+                                                <i class="far fa-clock ml-1"></i>{{ $notification->created_at->diffForHumans() }}
+                                            </small>
+                                        </div>
+                                    </a>
+                                @empty
+                                    <div class="p-4 text-center text-muted">
+                                        <i class="far fa-bell-slash d-block mb-2" style="font-size: 1.5rem;"></i>
+                                        لا توجد إشعارات جديدة
+                                    </div>
+                                @endforelse
+                            @endif
+                        </div>
+
+                        <div class="p-2 border-top text-center">
+                            <a href="#" class="small text-muted">عرض كل الإشعارات</a>
+                        </div>
+                    </div>
+                </li>
+
                 <li class="nav-item px-3">
                     <button type="button" class="btn btn-danger btn-sm rounded-pill px-3" data-toggle="modal"
                         data-target="#logoutModal">
@@ -104,6 +202,7 @@
             </ul>
         </nav>
 
+        <!-- Sidebar -->
         <aside class="main-sidebar sidebar-dark-primary elevation-4">
             <a href="#" class="brand-link">
                 <span class="brand-text font-weight-bold">نظام المدرسة الالكتروني</span>
@@ -128,15 +227,20 @@
 
                 <nav class="mt-2">
                     <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu">
+                        <!-- الرئيسية -->
                         <li class="nav-item">
-                            <a href="#" class="nav-link active"><i class="nav-icon fas fa-th-large"></i>
+                            <a href="#" class="nav-link active">
+                                <i class="nav-icon fas fa-home"></i>
                                 <p>الرئيسية</p>
                             </a>
                         </li>
+                        
                         <li class="nav-header mt-3 text-uppercase small" style="color: #95a5a6;">إدارة المحتوى</li>
 
+                        <!-- إدارة الصفوف -->
                         <li class="nav-item">
-                            <a href="#" class="nav-link"><i class="nav-icon fas fa-chalkboard"></i>
+                            <a href="#" class="nav-link">
+                                <i class="nav-icon fas fa-school"></i>
                                 <p>إدارة الصفوف الدراسية<i class="fas fa-angle-left right"></i></p>
                             </a>
                             <ul class="nav nav-treeview">
@@ -145,14 +249,16 @@
                                         <p>بيانات المراحل والصفوف</p>
                                     </a></li>
                                 <li class="nav-item"><a href="{{ route('subjects.index') }}" class="nav-link"><i
-                                            class="fas fa-book nav-icon"></i>
+                                            class="fas fa-journal-whills nav-icon"></i>
                                         <p>إدارة المواد الدراسية</p>
                                     </a></li>
                             </ul>
                         </li>
 
+                        <!-- إدارة المعلمين -->
                         <li class="nav-item">
-                            <a href="#" class="nav-link"><i class="nav-icon fas fa-chalkboard-teacher"></i>
+                            <a href="#" class="nav-link">
+                                <i class="nav-icon fas fa-user-tie"></i>
                                 <p>إدارة المعلمين<i class="fas fa-angle-left right"></i></p>
                             </a>
                             <ul class="nav nav-treeview">
@@ -163,78 +269,101 @@
                             </ul>
                         </li>
 
+                        <!-- إدارة الطلاب -->
                         <li class="nav-item">
-                            <a href="#" class="nav-link"><i class="nav-icon fas fa-user-graduate"></i>
+                            <a href="#" class="nav-link">
+                                <i class="nav-icon fas fa-user-graduate"></i>
                                 <p>إدارة الطلاب<i class="fas fa-angle-left right"></i></p>
                             </a>
                             <ul class="nav nav-treeview">
                                 <li class="nav-item"><a href="{{ route('students.index') }}" class="nav-link"><i
-                                            class="fas fa-user-edit nav-icon"></i>
+                                            class="fas fa-users nav-icon"></i>
                                         <p>بيانات الطلاب</p>
                                     </a></li>
                             </ul>
                         </li>
 
+                        <!-- إدارة الاختبارات -->
                         <li class="nav-item">
-                            <a href="#" class="nav-link"><i class="nav-icon fas fa-file-alt"></i>
+                            <a href="#" class="nav-link">
+                                <i class="nav-icon fas fa-paste"></i>
                                 <p>إدارة الاختبارات الطلابية<i class="fas fa-angle-left right"></i></p>
                             </a>
                             <ul class="nav nav-treeview">
                                 <li class="nav-item"><a href="{{ route('exams.index') }}" class="nav-link"><i
-                                            class="fas fa-tasks nav-icon"></i>
+                                            class="fas fa-pen-nib nav-icon"></i>
                                         <p>بيانات الاختبارات</p>
                                     </a></li>
                                 <li class="nav-item">
                                     <a href="{{ route('exam-schedules.index') }}" class="nav-link">
-                                        <i class="fas fa-calendar-alt nav-icon"></i>
-                                        <p> جدول الاختبارات</p>
+                                        <i class="fas fa-list-ol nav-icon"></i>
+                                        <p>جدول الاختبارات</p>
                                     </a>
                                 </li>
                             </ul>
                         </li>
+
+                        <!-- الحضور والغياب -->
+                        <li class="nav-item">
+                            <a href="{{ route('attendance.index') }}" class="nav-link">
+                                <i class="nav-icon fas fa-user-clock"></i>
+                                <p>إدارة الحضور والغياب</p>
+                            </a>
+                        </li>
+
+                        <li class="nav-header mt-3 text-uppercase small" style="color: #95a5a6;">بوابة الطالب</li>
+
+                        <!-- الاختبارات المتاحة -->
                         <li class="nav-item">
                             <a href="#" class="nav-link">
-                                <i class="nav-icon fas fa-calendar-alt"></i>
-                                <p>
-                                    جدول الحصص الطلابية
-                                    <i class="fas fa-angle-left right"></i>
-                                </p>
+                                <i class="nav-icon fas fa-laptop-code"></i>
+                                <p>الاختبارات الطلابية<i class="fas fa-angle-left right"></i></p>
                             </a>
                             <ul class="nav nav-treeview">
                                 <li class="nav-item">
-                                    {{-- تأكد من تغيير اسم الـ route إلى اسم الراوت الخاص بجدول الحصص لديك --}}
-                                    <a href="{{ route('students.show-schedule') }}" class="nav-link">
-                                        <i class="fas fa-table nav-icon"></i>
-                                        <p>عرض الجدول الدراسي</p>
+                                    <a href="{{ route('exams.student') }}" class="nav-link">
+                                        <i class="fas fa-clipboard-list nav-icon"></i>
+                                        <p>الاختبارات المتاحة </p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="{{ route('student.schdule.exam') }}" class="nav-link">
+                                        <i class="nav-icon fas fa-calendar-check"></i>
+                                        <p>جدول الاختبارات </p>
                                     </a>
                                 </li>
                             </ul>
                         </li>
-                        <li class="nav-item">
-                            <a href="{{ route('exams.student') }}" class="nav-link">
-                                <i class="fas fa-graduation-cap nav-icon "></i>
-                                <p>
-                                    الاختبارات الطلابية
-                                    <i class="fas fa-angle-left right"></i>
-                                </p>
-                            </a>
 
+                        <!-- الجدول الدراسي -->
+                        <li class="nav-item">
+                            <a href="{{ route('students.show-schedule') }}" class="nav-link">
+                                <i class="nav-icon fas fa-table"></i>
+                                <p>الجدول الدراسي</p>
+                            </a>
                         </li>
+
+                        <!-- البيانات الفصلية -->
                         <li class="nav-item">
                             <a href="{{ route('exams.student.marks') }}" class="nav-link">
-                                <i class="fas fa-file-invoice nav-icon "></i>
-                                <p>
-                                    البيانات الفصلية
-                                    <i class="fas fa-angle-left right"></i>
-                                </p>
+                                <i class="nav-icon fas fa-chart-line"></i>
+                                <p> نتائج الاختبارات</p>
                             </a>
+                        </li>
 
+                        <!-- الملخصات -->
+                        <li class="nav-item">
+                            <a href="{{ route('student.files.summary') }}" class="nav-link">
+                                <i class="nav-icon fas fa-file-download"></i>
+                                <p>الملخصات التعليمية</p>
+                            </a>
                         </li>
                     </ul>
                 </nav>
             </div>
         </aside>
 
+        <!-- Content -->
         <div class="content-wrapper">
             <div class="content-header">
                 <div class="container-fluid">
@@ -254,14 +383,14 @@
         </div>
 
         <footer class="main-footer bg-white border-0 text-center py-3">
-            <small class="text-muted">حقوق النشر &copy; {{ date('Y') }} <strong>نظام المدرسة الإلكتروني</strong>. جميع
-                الحقوق محفوظة.</small>
+            <small class="text-muted">حقوق النشر &copy; {{ date('Y') }} <strong>نظام المدرسة الإلكتروني</strong>. جميع الحقوق محفوظة.</small>
         </footer>
     </div>
 
+    <!-- Modal Logout -->
     <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
+            <div class="modal-content text-right">
                 <div class="modal-header border-0">
                     <h5 class="modal-title font-weight-bold">تأكيد تسجيل الخروج</h5>
                 </div>
@@ -283,7 +412,6 @@
     <script src="{{ asset('cms/plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('cms/dist/js/adminlte.min.js') }}"></script>
     <script src="{{ asset('js/sweetalert2.min.js') }}"></script>
-    <script src="{{ asset('js/app.js') }}"></script>
     @stack('script')
 </body>
 

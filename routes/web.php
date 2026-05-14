@@ -1,8 +1,10 @@
 <?php
 
 
+use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\ClassroomController;
 use App\Http\Controllers\ClassScheduleController;
+use App\Http\Controllers\DataExamScheduleController;
 use App\Http\Controllers\ExamClassroomController;
 use App\Http\Controllers\ExamController;
 use App\Http\Controllers\ExamScheduleController;
@@ -10,15 +12,15 @@ use App\Http\Controllers\ExamStudentController;
 use App\Http\Controllers\GradeLevelController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\StudentController;
+use App\Http\Controllers\StudentExamScheduleController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\SummaryFileController;
+use App\Http\Controllers\SummaryFileStudentController;
 use App\Http\Controllers\TeacherController;
 use Illuminate\Support\Facades\Route;
 
 // جميع مسارات لوحة التحكم (CMS) محمية بـ Middleware للتحقق من تسجيل الدخول
 Route::middleware('auth')->prefix('cms')->group(function () {
-
-
 
     // الموارد الأساسية (Resources) التي تعتمد على عمليات CRUD القياسية
     Route::resources([
@@ -29,7 +31,8 @@ Route::middleware('auth')->prefix('cms')->group(function () {
         'students'     => StudentController::class,
         'exams'        => ExamController::class,
         'questions'    => QuestionController::class,
-        'exam-schedules' => ExamScheduleController::class
+        'exam-schedules' => ExamScheduleController::class,
+        'data_exam_schedules' => DataExamScheduleController::class
     ]);
 
     // مسارات إدارة الجداول الدراسية (Class Schedules)
@@ -94,9 +97,25 @@ Route::middleware('auth')->prefix('cms')->group(function () {
     Route::get('exam/student/marks', [ExamStudentController::class, 'studentExamMarks'])
         ->name('exams.student.marks');
 
-        //مسار تعديل علامة الطالب
-    Route::post('/update-exam-score', [ExamClassroomController::class, 'updateScore'])
+    //مسار تعديل علامة الطالب
+    Route::post('/update-exam-score', [ExamStudentController::class, 'updateScore'])
         ->name('exam.update-score');
+
+
+    // مسار الذهاب لصفحة جدول اختبارات  الطالب        
+    Route::get('student/schdule-exam', [StudentExamScheduleController::class, 'getExamScheduleForStudent'])
+        ->name('student.schdule.exam');
+
+
+    // مسار الذهاب لصفحة المواد المنشورة لها ملخصات       
+    Route::get('student/files-summary', [SummaryFileStudentController::class, 'getSubjectsStudent'])
+        ->name('student.files.summary');
+
+
+
+    // مسار الذهاب لصفحة الملخصات الخاصة بالطلاب       
+    Route::get('student/files-summary/list/{id}', [SummaryFileStudentController::class, 'getSummariesBySubject'])
+        ->name('student.files.summary.list');
 
 
     //viewExamStudent
@@ -120,6 +139,27 @@ Route::middleware('auth')->prefix('cms')->group(function () {
     // مسار إيقاف نشر الاختبارات
     Route::delete('exams/unpublish/destroy/{id}', [ExamClassroomController::class, 'destroy'])
         ->name('exams.publish.destroy');
+
+
+    Route::prefix('attendance')
+        ->controller(AttendanceController::class)
+        ->as('attendance.')
+        ->group(function () {
+            Route::get('/',  'index')->name('index');
+            Route::get('/class/{id}', 'showClassStudents')->name('create');
+            Route::post('/store',  'store')->name('store');
+            Route::get('/log/{student_id}',  'studentLog')->name('log');
+            Route::delete('/delete/{id}',  'destroy')->name('delete');
+            Route::put('/update/{id}',  'update')->name('update');
+        });
+
+    Route::get('/notifications/{id}/read', function ($id) {
+        $notification = auth()->user()->notifications()->findOrFail($id);
+        $notification->markAsRead();
+
+        // التحويل إلى صفحة الاختبار مباشرة
+        return redirect($notification->data['action_url']);
+    })->name('notifications.read');
 });
 
 

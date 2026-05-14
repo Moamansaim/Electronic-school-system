@@ -38,7 +38,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
 
-        // SchoolID: 1wy7326598741
-        // Password: DQb4WVYwWTt6
+        // SchoolID: yisn321654789
+        // Password: X7sTk7YyNkrf
     }
 }

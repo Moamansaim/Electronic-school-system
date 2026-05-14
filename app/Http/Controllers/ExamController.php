@@ -100,9 +100,7 @@ class ExamController extends Controller
         if ($exam->attempts()->exists()) {
             return redirect()->back()->with('error', 'لا يمكن حذف الاختبار حاليا, لوجود محاولات مسجلة للطلاب. يمكن حذفه فقط بعد ترفيع الطالب للمرحلة التالية ');
         }
-        
         $exam->delete();
-        
         return redirect()
             ->back()
             ->with('success', "تم حذف إختبار ({$exam->subject->name}) بنجاح");

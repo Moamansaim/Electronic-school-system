@@ -83,12 +83,29 @@ class TeacherController extends Controller
      */
     public function storeAssignment(TeacherAssignmentRequest $teacherAssignmentRequest)
     {
-        $teacher_assignment = $teacherAssignmentRequest->validated();
-        TeacherAssignment::create($teacher_assignment);
+        try {
+            $teacher_assignment = $teacherAssignmentRequest->validated();
 
-        return redirect()
-            ->route('teachers.index')
-            ->with('success', 'تمت  تعيين المادة والصف  الدراسي للمعلم بنجاح.');
+            // محاولة إنشاء السجل
+            TeacherAssignment::create($teacher_assignment);
+
+            return redirect()
+                ->route('teachers.index')
+                ->with('success', 'تم تعيين المادة والصف الدراسي للمعلم بنجاح.');
+        } catch (\Illuminate\Database\QueryException $e) {
+            // التحقق إذا كان الخطأ هو تكرار سجل (Error Code 1062)
+            if ($e->errorInfo[1] == 1062) {
+                return redirect()
+                    ->back()
+                    ->withInput() // لإرجاع البيانات المدخلة في الحقول
+                    ->with('error', 'خطأ: هذا المعلم معين بالفعل لهذا الصف والمادة مسبقاً.');
+            }
+
+            // في حال حدوث خطأ آخر في قاعدة البيانات
+            return redirect()
+                ->back()
+                ->with('error', 'حدث خطأ غير متوقع في قاعدة البيانات، يرجى المحاولة لاحقاً.');
+        }
     }
 
     /**
@@ -158,17 +175,10 @@ class TeacherController extends Controller
         } catch (Exception $e) {
             DB::rollBack();
 
-            return back()->withInput()
+            return back()
+                ->withInput()
                 ->with('error', 'حدث خطأ أثناء حفظ البيانات، يرجى المحاولة لاحقًا. ');
         }
-    }
-
-    /**
-     * عرض تفاصيل معلم محدد.
-     */
-    public function show(Teacher $teacher)
-    {
-        //
     }
 
     /**
@@ -206,7 +216,8 @@ class TeacherController extends Controller
 
             $full_name = $teacher->full_name;
 
-            return redirect()->route('teachers.index')
+            return redirect()
+                ->route('teachers.index')
                 ->with('success', "تم تحديث بيانات المعلم ({$full_name}) بنجاح");
         } catch (Exception $e) {
             DB::rollBack();

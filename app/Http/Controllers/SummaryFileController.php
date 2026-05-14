@@ -107,6 +107,8 @@ class SummaryFileController extends Controller
         // 4. حذف السجل من قاعدة البيانات
         $file->delete();
 
-        return redirect()->back()->with('success', 'تم حذف الملف بنجاح.');
+        return redirect()
+            ->back()
+            ->with('success', 'تم حذف الملف بنجاح.');
     }
 }

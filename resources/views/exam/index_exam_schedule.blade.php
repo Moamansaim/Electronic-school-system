@@ -1,79 +1,112 @@
 @extends('layout-cms.main-layout')
-@section('title', 'عرض جدول الاختبارات')
-
 @section('content')
-    <div class="container-fluid p-4">
-        <div class="card border-0 shadow-sm" style="border-radius: 15px;">
-            <div class="card-header border-0 py-4 d-flex justify-content-between align-items-center">
-                <h4 class="mb-0 font-weight-bold">
-                    <i class="fas fa-calendar-alt text-primary mr-2"></i> جدول الاختبارات المنشورة
-                </h4>
-                <a href="{{ route('exam-schedules.create') }}" class="btn btn-primary text-white shadow-sm px-4 rounded-pill">
-                    <i class="fas fa-plus mr-1 text-white"></i> إضافة موعد جديد
-                </a>
-            </div>
+    <div class="container mt-5">
+          <x-grade-level-success-component />
+        <x-grade-level-error-component />
+        <div class="text-center mb-4">
+            <h2 class="fw-bold text-primary">{{ $schedules->schedule_title }}</h2>
+            <a href="{{ route('exam-schedules.create') }}"
+                class="btn btn-primary shadow-sm px-4 rounded-pill font-weight-bold">
+                <i class="fas fa-plus ml-1"></i> إضافة موعد جديد
+            </a>
+        </div>
 
-            <div class="card-body p-0">
-                <div class="table-responsive" dir="rtl">
-                    <table class="table text-center table-hover align-middle mb-0">
-                        <thead class="bg-light">
-                            <tr>
-                                <th class="py-3">العنوان</th>
-                                <th class="py-3">المادة</th>
-                                <th class="py-3">اليوم والتاريخ</th>
-                                <th class="py-3">التوقيت</th>
-                                <th class="py-3">النوع</th>
-                                <th class="py-3">العمليات</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($schedules as $schedule)
-                                <tr>
-                                    <td class="font-weight-bold">{{ $schedule->schedule_title }}</td>
-                                    <td>{{ $schedule->subject->name }}</td>
-                                    <td>
-                                        <span class="d-block">{{ $schedule->exam_day }}</span>
-                                        <small class="text-muted">{{ $schedule->exam_date }}</small>
-                                    </td>
-                                    <td>
-                                        <span class="badge badge-light">من: {{ $schedule->start_time }}</span>
-                                        <span class="badge badge-light">إلى: {{ $schedule->end_time }}</span>
-                                    </td>
-                                    <td>
-                                        <span class="badge {{ $schedule->exam_type == 'final' ? 'badge-danger' : 'badge-info' }}">
-                                            {{ $schedule->exam_type == 'final' ? 'نهائي' : 'نصفي' }}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <div class="btn-group">
-                                            <a href="{{ route('exam-schedules.edit', $schedule->id) }}"
-                                                class="btn btn-sm btn-outline-success mx-1">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
-                                            <form action="{{ route('exam-schedules.destroy', $schedule->id) }}" method="POST"
-                                                onsubmit="return confirm('هل أنت متأكد من الحذف؟')">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="btn btn-sm btn-outline-danger">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
-                                            </form>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="6" class="py-5 text-center">
-                                        <img src="https://cdn-icons-png.flaticon.com/512/7486/7486744.png" width="80"
-                                            class="mb-3 opacity-50">
-                                        <p class="text-muted">لم يتم العثور على أي جداول اختبارات حالياً.</p>
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
+        <div class="table-responsive shadow-sm">
+            <table class="table table-bordered table-hover align-middle bg-white">
+                <thead class="table-light">
+                    <tr class="text-center border-bottom-2">
+                        <th scope="col" style="width: 50px;" class="bg-light">#</th>
+                        <th scope="col">اسم المادة</th>
+                        <th scope="col">اليوم</th>
+                        <th scope="col">التاريخ</th>
+                        <th scope="col">وقت البدء</th>
+                        <th scope="col">وقت الانتهاء</th>
+                        <th scope="col">العمليات</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    @foreach($schedules->dataExamSchedules as $data)
+                        <tr class="text-center">
+                            <td class="fw-bold bg-light text-secondary">{{ $loop->iteration }}</td>
+                            <td class="text-start ps-4 fw-medium">{{ $data->subject->name }}</td> {{-- يفضل ربطها بعلاقة لجلب
+                            اسم المادة --}}
+                            <td><span class="badge bg-info text-dark">{{ $data->exam_day }}</span></td>
+                            <td>{{ $data->exam_date }}</td>
+                            <td class="text-success fw-bold">{{ $data->start_time }}</td>
+                            <td class="text-danger fw-bold">{{ $data->end_time }}</td>
+                            <td class="text-center">
+                                <div class="d-flex justify-content-center gap-2">
+                                    <a href="{{ route('data_exam_schedules.edit', $data->id) }}"
+                                        class="btn btn-sm btn-info mr-2 d-flex align-items-center" title="تعديل">
+                                        <i class="fas fa-pen mr-1"></i>
+                                        <span>تعديل</span>
+                                    </a>
+
+                                    <button class="btn btn-sm btn-danger d-flex align-items-center" data-toggle="modal"
+                                        data-target="#deleteModal{{ $data->id }}" title="حذف">
+                                        <i class="fas fa-trash-alt mr-1"></i>
+                                        <span>حذف</span>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    @foreach ($schedules->dataExamSchedules as $data)
+        <div class="modal fade" id="deleteModal{{ $data->id }}" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content border-0 shadow" style="border-radius: 15px;">
+                    <div class="modal-body p-5 text-center">
+                        <div class="text-danger mb-4">
+                            <i class="fas fa-exclamation-circle fa-4x"></i>
+                        </div>
+                        <h3 class="font-weight-bold">تأكيد الحذف</h3>
+                        <p class="text-muted">هل أنت متأكد من حذف موعد اختبار
+                            <strong>({{ $data->subject->name }})</strong>؟<br>هذا الإجراء لا
+                            يمكن التراجع عنه.
+                        </p>
+                        <div class="d-flex justify-content-center mt-4">
+                            <button type="button" class="btn btn-light px-4 mr-2 rounded-pill"
+                                data-dismiss="modal">إلغاء</button>
+                            <form action="{{ route('data_exam_schedules.destroy', $data->id) }}" method="POST">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-danger px-4 rounded-pill">تأكيد
+                                    الحذف</button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    @endforeach
+
+    <style>
+        /* لمسات لجعل الجدول يشبه الإكسل */
+        .table-bordered td,
+        .table-bordered th {
+            border: 1px solid #dee2e6 !important;
+            padding: 12px;
+        }
+
+        .table thead th {
+            background-color: #f8f9fa;
+            color: #495057;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+        }
+
+        .table-hover tbody tr:hover {
+            background-color: #f1faff;
+            /* لون خفيف عند المرور بالفأرة */
+        }
+    </style>
+
+
 @endsection

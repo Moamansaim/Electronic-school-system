@@ -11,7 +11,6 @@
                             <i class="fas fa-user-graduate text-primary mr-2"></i> متابعة تقدم الطلاب في الاختبارات
                         </h4>
                     </div>
-                    <!-- مربع البحث -->
                     <div class="col-md-6 mt-3 mt-md-0">
                         <div class="input-group" dir="rtl">
                             <input type="text" id="studentSearch" class="form-control border-primary"
@@ -44,7 +43,7 @@
                             @foreach ($students as $student)
                                 @php
                                     $attempt = $student->examAttempt->first();
-                                    $maxMark = $attempt->exam->total_marks ?? 100; // القيمة الافتراضية إذا لم توجد
+                                    $maxMark = $attempt->exam->total_marks ?? 100;
                                 @endphp
                                 <tr class="student-row">
                                     <td class="text-center font-weight-bold text-muted">{{ $loop->iteration }}</td>
@@ -55,7 +54,7 @@
                                                 <i class="fas fa-user "></i>
                                             </div>
                                             <span
-                                                class="font-weight-bold text-dark  student-name">{{ $student->full_name }}</span>
+                                                class="font-weight-bold text-dark student-name">{{ $student->full_name }}</span>
                                         </div>
                                     </td>
                                     <td>
@@ -154,66 +153,73 @@
         }
     </style>
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        $(document).ready(function() {
-            // 1. نظام البحث (Client-side)
-            $("#studentSearch").on("keyup", function() {
-                var value = $(this).val().toLowerCase();
-                $(".student-row").filter(function() {
-                    $(this).toggle($(this).find('.student-name').text().toLowerCase().indexOf(
-                        value) > -1)
+        document.addEventListener('DOMContentLoaded', function() {
+
+            // 1. نظام البحث (Vanilla JS)
+            const searchInput = document.getElementById('studentSearch');
+            searchInput.addEventListener('keyup', function() {
+                const filter = this.value.toLowerCase();
+                const rows = document.querySelectorAll('.student-row');
+
+                rows.forEach(row => {
+                    const name = row.querySelector('.student-name').textContent.toLowerCase();
+                    row.style.display = name.includes(filter) ? "" : "none";
                 });
             });
 
-            // 2. تحديث الدرجة مع التحقق من النطاق
-            $('.score-input').on('change', function() {
-                var input = $(this);
-                var attemptId = input.data('attempt-id');
-                var maxMark = parseFloat(input.data('max'));
-                var newScore = parseFloat(input.val());
-                var errorMsg = input.siblings('.error-msg');
+            // 2. تحديث الدرجة (Vanilla JS Fetch API)
+            const scoreInputs = document.querySelectorAll('.score-input');
+            scoreInputs.forEach(input => {
+                input.addEventListener('change', function() {
+                    const attemptId = this.dataset.attemptId;
+                    const maxMark = parseFloat(this.dataset.max);
+                    const newScore = parseFloat(this.value);
+                    const errorMsg = this.nextElementSibling;
 
-                // التحقق من النطاق قبل الإرسال
-                if (newScore > maxMark || newScore < 0) {
-                    input.addClass('is-invalid-mark');
-                    errorMsg.removeClass('d-none').text('الحد الأقصى: ' + maxMark);
-                    return; // إيقاف العملية
-                } else {
-                    input.removeClass('is-invalid-mark');
-                    errorMsg.addClass('d-none');
-                }
-
-                input.css('opacity', '0.5');
-
-                $.ajax({
-                    url: "{{ route('exam.update-score') }}",
-                    method: "POST",
-                    data: {
-                        _token: "{{ csrf_token() }}",
-                        attempt_id: attemptId,
-                        score: newScore
-                    },
-                    success: function(response) {
-                        input.css('opacity', '1');
-                        if (response.success) {
-                            input.addClass('is-updated');
-                            setTimeout(function() {
-                                input.removeClass('is-updated');
-                            }, 2000);
-                        } else {
-                            alert(response.message || 'فشل التحديث');
-                        }
-                    },
-                    error: function(xhr) {
-                        input.css('opacity', '1');
-                        // التعامل مع أخطاء التحقق القادمة من السيرفر (422)
-                        if (xhr.status === 422) {
-                            alert('الدرجة المدخلة غير صالحة أو تتجاوز الدرجة الكلية.');
-                        } else {
-                            alert('حدث خطأ فني، حاول مرة أخرى.');
-                        }
+                    // التحقق من النطاق
+                    if (newScore > maxMark || newScore < 0) {
+                        this.classList.add('is-invalid-mark');
+                        errorMsg.classList.remove('d-none');
+                        errorMsg.textContent = 'الحد الأقصى: ' + maxMark;
+                        return;
+                    } else {
+                        this.classList.remove('is-invalid-mark');
+                        errorMsg.classList.add('d-none');
                     }
+
+                    this.style.opacity = '0.5';
+
+                    // إرسال الطلب عبر Fetch API
+                    fetch("{{ route('exam.update-score') }}", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                                "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                                "Accept": "application/json"
+                            },
+                            body: JSON.stringify({
+                                attempt_id: attemptId,
+                                score: newScore
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            this.style.opacity = '1';
+                            if (data.success) {
+                                this.classList.add('is-updated');
+                                setTimeout(() => {
+                                    this.classList.remove('is-updated');
+                                }, 2000);
+                            } else {
+                                alert(data.message || 'فشل التحديث');
+                            }
+                        })
+                        .catch(error => {
+                            this.style.opacity = '1';
+                            console.error('Error:', error);
+                            alert('حدث خطأ أثناء الاتصال بالخادم');
+                        });
                 });
             });
         });

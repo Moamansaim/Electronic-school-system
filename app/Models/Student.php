@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Attendance;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -13,7 +14,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Student extends Model
 {
-     use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes;
     protected $fillable = [
         'first_name',
         'father_name',
@@ -87,10 +88,14 @@ class Student extends Model
         return $this->hasMany(ExamAttempt::class);
     }
 
+    public function attendance(): HasMany
+    {
+
+        return $this->hasMany(Attendance::class);
+    }
+
     public function getFullNameAttribute(): string
     {
         return "{$this->first_name} {$this->father_name} {$this->grandfather_name} {$this->family_name}";
     }
-
-   
 }

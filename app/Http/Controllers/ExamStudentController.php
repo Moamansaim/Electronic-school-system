@@ -192,12 +192,27 @@ class ExamStudentController extends Controller
         }
     }
 
-
+    //دالة جلب نتائج اختبارات الطلاب + سجل الحضور والغياب 
     public function studentExamMarks()
     {
         $student_marks = ExamAttempt::where('student_id', Auth::user()->student->id)
             ->with('exam')
             ->paginate(10);
         return view('student.student_marks', compact('student_marks'));
+    }
+
+    public function updateScore(Request $request)
+    {
+        $request->validate([
+            'attempt_id' => 'required|integer',
+            'score' => 'required|numeric|min:0'
+        ]);
+        
+        $attempt = ExamAttempt::findOrFail($request->attempt_id);
+        $attempt->final_score = $request->score;
+        $attempt->save();
+
+        return response()->json(['success' => true]);
+                
     }
 }

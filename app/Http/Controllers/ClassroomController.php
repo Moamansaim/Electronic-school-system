@@ -6,7 +6,6 @@ use App\Http\Requests\ClassroomRequest;
 use App\Models\Classroom;
 use App\Models\GradeLevel;
 use App\Models\Teacher;
-use Exception;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -43,25 +42,16 @@ class ClassroomController extends Controller
      */
     public function store(ClassroomRequest $request): RedirectResponse
     {
-        try {
-            $data = $request->validated();
-
-            // التأكد من ضبط قيمة teacher_id كـ null في حال عدم اختيار معلم
-            if (empty($data['teacher_id'])) {
-                $data['teacher_id'] = null;
-            }
-
-            Classroom::create($data);
-
-            return redirect()
-                ->route('classrooms.index')
-                ->with('success', 'تمت إضافة الصف الدراسي بنجاح.');
-        } catch (Exception $e) {
-            return redirect()
-                ->back()
-                ->withInput()
-                ->with('error', 'حدث خطأ أثناء حفظ الصف الدراسي، يرجى المحاولة لاحقًا.');
+        $data = $request->validated();
+        // التأكد من ضبط قيمة teacher_id كـ null في حال عدم اختيار معلم
+        if (empty($data['teacher_id'])) {
+            $data['teacher_id'] = null;
         }
+        Classroom::create($data);
+
+        return redirect()
+            ->route('classrooms.index')
+            ->with('success', 'تمت إضافة الصف الدراسي بنجاح.');
     }
 
     /**
@@ -80,24 +70,17 @@ class ClassroomController extends Controller
      */
     public function update(ClassroomRequest $request, Classroom $classroom): RedirectResponse
     {
-        try {
-            $data = $request->validated();
+        $data = $request->validated();
 
-            if (empty($data['teacher_id'])) {
-                $data['teacher_id'] = null;
-            }
-
-            $classroom->update($data);
-
-            return redirect()
-                ->route('classrooms.index')
-                ->with('success', 'تم تحديث الصف الدراسي بنجاح.');
-        } catch (Exception $e) {
-            return redirect()
-                ->back()
-                ->withInput()
-                ->with('error', 'حدث خطأ أثناء تعديل الصف الدراسي، يرجى المحاولة لاحقًا.');
+        if (empty($data['teacher_id'])) {
+            $data['teacher_id'] = null;
         }
+
+        $classroom->update($data);
+
+        return redirect()
+            ->route('classrooms.index')
+            ->with('success', 'تم تحديث الصف الدراسي بنجاح.');
     }
 
     /**

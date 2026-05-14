@@ -3,22 +3,15 @@
 
 @section('content')
     <div class="container-fluid p-4">
-        <div class="card border-0 shadow-sm mb-3 d-print-none" style="border-radius: 10px;">
             <div class="card-body py-3">
                 <div class="row align-items-center">
-                    <div class="col-md-8">
-                        <h4 class="mb-0 font-weight-bold text-dark">
-                            <i class="fas fa-calendar-alt text-primary ml-2"></i> الجدول الدراسي: {{ $student->full_name }}
-                        </h4>
-                        <div class="text-muted mt-1">الصف: {{ $student->classroom->name }}</div>
-                    </div>
+                  
                     <div class="col-md-4 text-left">
                         <button onclick="window.print()" class="btn btn-primary rounded-pill px-4 shadow-sm">
                             <i class="fas fa-print ml-1"></i> طباعة الجدول
                         </button>
                     </div>
                 </div>
-            </div>
         </div>
 
         <div class="card border-0 shadow-sm" style="border-radius: 10px; overflow: hidden;">

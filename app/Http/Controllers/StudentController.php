@@ -131,7 +131,7 @@ class StudentController extends Controller
      */
     public function show(Student $student): View
     {
-        $student = $student->load(['gradeLevel', 'classroom', 'examAttempt']);
+        $student = $student->load(['gradeLevel', 'classroom', 'examAttempt', 'attendance']);
 
         $rawSchedules = ClassSchedule::where('class_schedules.classroom_id', $student->classroom_id)
             ->join('teacher_assignments', function ($join) {

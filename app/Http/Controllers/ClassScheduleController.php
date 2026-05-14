@@ -7,7 +7,6 @@ use App\Enums\WeekDay;
 use App\Http\Requests\ClassScheduleRequest;
 use App\Models\ClassSchedule as ModelsClassSchedule;
 use App\Models\Teacher;
-use Exception;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
@@ -35,18 +34,11 @@ class ClassScheduleController extends Controller
      */
     public function store(ClassScheduleRequest $classScheduleRequest): RedirectResponse
     {
-        try {
-            ModelsClassSchedule::create($classScheduleRequest->validated());
+        ModelsClassSchedule::create($classScheduleRequest->validated());
 
-            return redirect()
-                ->back()
-                ->with('success', 'تمت إضافة الحصة الدراسية بنجاح.');
-        } catch (Exception $e) {
-            return redirect()
-                ->back()
-                ->withInput()
-                ->with('error', 'حدث خطأ أثناء حفظ الحصة الدراسية يرجى المحاولة لاحقًا.');
-        }
+        return redirect()
+            ->back()
+            ->with('success', 'تمت إضافة الحصة الدراسية بنجاح.');
     }
 
     /**
@@ -54,13 +46,9 @@ class ClassScheduleController extends Controller
      */
     public function show($teacher_id)
     {
-        if ($teacher_id) {
-            $teacher = Teacher::findOrFail($teacher_id);
-            $class_schedules = \App\Models\ClassSchedule::where('teacher_id', $teacher_id)
-                ->get();
-        } else {
-            abort(404);
-        }
+        $teacher = Teacher::findOrFail($teacher_id);
+        $class_schedules = \App\Models\ClassSchedule::where('teacher_id', $teacher_id)
+            ->get();
 
         return view('class_schedule.index_class_schedule', compact('class_schedules', 'teacher'));
     }
@@ -88,23 +76,15 @@ class ClassScheduleController extends Controller
      */
     public function update(ClassScheduleRequest $classScheduleRequest, ModelsClassSchedule $classSchedule): RedirectResponse
     {
-        try {
-            $classSchedule->update($classScheduleRequest->validated());
+        $classSchedule->update($classScheduleRequest->validated());
 
-            $teacher_id = $classSchedule->teacher_id;
+        $teacher_id = $classSchedule->teacher_id;
 
-            return redirect()
-                ->route('class-schedules.show', [
-                    'class_schedule' => $classSchedule->id,
-                    'teacher_id' => $teacher_id,
-                ])
-                ->with('success', 'تمت تعديل الحصة الدراسية بنجاح.');
-        } catch (Exception $e) {
-            return redirect()
-                ->back()
-                ->withInput()
-                ->with('error', 'حدث خطأ أثناء تعديل الحصة الدراسية يرجى المحاولة لاحقًا.');
-        }
+        return redirect()
+            ->route('class-schedules.show', [
+                'class_schedule' => $classSchedule->id,
+                'teacher_id' => $teacher_id,
+            ])->with('success', 'تمت تعديل الحصة الدراسية بنجاح.');
     }
 
     /**
@@ -112,15 +92,10 @@ class ClassScheduleController extends Controller
      */
     public function destroy(ModelsClassSchedule $classSchedule): RedirectResponse
     {
-        try {
-            $classSchedule->delete();
-
-            return redirect()->back()->with('success', 'تمت عملية الحذف بنجاح');
-        } catch (Exception $e) {
-            return redirect()
-                ->back()
-                ->with('error', 'حدث خطأ أثناء عملية حذف الحصة الدراسية يرجى المحاولة لاحقًا.');
-        }
+        $classSchedule->delete();
+        return redirect()
+            ->back()
+            ->with('success', 'تمت عملية الحذف بنجاح');
     }
 
     /**

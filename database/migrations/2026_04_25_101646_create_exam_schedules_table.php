@@ -13,12 +13,7 @@ return new class extends Migration
     {
         Schema::create('exam_schedules', function (Blueprint $table) {
             $table->id();
-            $table->string('schedule_title'); // مثال: جدول الاختبارات النهائية
-            $table->foreignId('subject_id')->constrained()->cascadeOnDelete(); // جلب المادة
-            $table->date('exam_date'); // التاريخ
-            $table->string('exam_day'); // اليوم
-            $table->time('start_time'); // وقت البدء
-            $table->time('end_time'); // وقت الانتهاء
+            $table->string('schedule_title');
             $table->timestamps();
         });
     }
@@ -28,6 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('exam_schedules');
+        Schema::dropIfExists('data_exam_schedules');
     }
 };

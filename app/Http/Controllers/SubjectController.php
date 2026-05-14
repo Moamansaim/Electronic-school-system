@@ -46,7 +46,6 @@ class SubjectController extends Controller
             ->with('success', 'تمت إضافة المادة الدراسية بنجاح.');
     }
 
-
     /**
      * عرض تفاصيل مادة محددة.
      */
@@ -86,7 +85,6 @@ class SubjectController extends Controller
             ->back()
             ->with('success', "تم حذف مادة ({$subject->name}) بنجاح");
     }
-
     /**
      * جلب جميع المراحل الدراسية مرتبة بالاسم.
      */
