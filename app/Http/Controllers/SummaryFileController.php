@@ -35,7 +35,7 @@ class SummaryFileController extends Controller
             'files.*.max'         => 'حجم الملف يجب ألا يتجاوز 10 ميجابايت.',
         ]);
 
-        // في حال فشل التحقق، نقوم بإرجاع رسالة خطأ مع رموز الحالة 422
+        
         if ($validator->fails()) {
             return response()->json([
                 'status'  => false,
@@ -45,18 +45,18 @@ class SummaryFileController extends Controller
         }
 
         try {
-            // معالجة الملفات المرفوعة وتخزينها
+            
             foreach ($request->file('files') as $file) {
-                // تخزين الملف في مجلد 'summaries' داخل قرص 'public'
+                
                 $path = $file->store('summaries', 'public');
 
-                // حفظ بيانات الملف في قاعدة البيانات
+                
                 $savedFile = SummaryFile::create([
                     'summary_content_file' => $request->summary_content_file,
                     'user_id'    => $request->user_id,
                     'subject_id' => $request->subject_id,
-                    'file_path'  => $path, // المسار الناتج من التخزين
-                    'file_name'  => $file->getClientOriginalName(), // الاسم الأصلي للملف
+                    'file_path'  => $path, 
+                    'file_name'  => $file->getClientOriginalName(),
                 ]);
             }
 
@@ -80,7 +80,7 @@ class SummaryFileController extends Controller
      */
     public function viewFileSummary($id): View
     {
-        // جلب المادة مع علاقتها بالملفات باستخدام Eager Loading (with)
+        
         $subjects = Subject::with('files')->findOrFail($id);
         return view('subject.view_file_summary', compact('subjects'));
     }
@@ -92,19 +92,16 @@ class SummaryFileController extends Controller
      */
     public function destroy($id)
     {
-        // 1. جلب السجل
+        
         $file = SummaryFile::findOrFail($id);
 
-        // 2. المسار المخزن في قاعدة البيانات هو مثلاً: "summaries/filename.pdf"
         $path = $file->file_path;
-
-        // 3. الحذف باستخدام قرص 'public' مباشرة
-        // Storage::disk('public') يوجهنا تلقائياً إلى مجلد storage/app/public
+        
         if (Storage::disk('public')->exists($path)) {
             Storage::disk('public')->delete($path);
         }
 
-        // 4. حذف السجل من قاعدة البيانات
+    
         $file->delete();
 
         return redirect()
