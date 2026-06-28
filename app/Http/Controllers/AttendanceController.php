@@ -14,7 +14,7 @@ class AttendanceController extends Controller
     // عرض الصفوف (البطاقات)
     public function index()
     {
-        $classrooms = Classroom::all(); // افترضنا وجود مودل للفصول
+        $classrooms = Classroom::all(); 
         return view('attendance.classroom', compact('classrooms'));
     }
 
